@@ -8,6 +8,7 @@ DOWN = p.getQuaternionFromEuler([3.14159, 0, 0])
 HOME = [0, -0.4, 0, -2.4, 0, 2.0, 0.8]
 TABLE_Z = 0.625
 W, H = 640, 480
+ALIASES = {"tray": ["green box", "green tray", "green container"]}
 
 
 class RobotEnv:
@@ -23,7 +24,24 @@ class RobotEnv:
             p.resetJointState(self.robot, j, q)
         self.objects = {}
         self.held = None  # (name, constraint_id)
-        self.objects["tray"] = p.loadURDF("tray/traybox.urdf", [0.6, -0.25, TABLE_Z], globalScaling=0.6)
+        self.objects["tray"] = self.make_tray([0.6, -0.25])
+    
+    def make_tray(self, center, size=0.20, wall=0.01, height=0.05, rgba=(0.1, 0.75, 0.2, 1)):
+        cx, cy = center
+        half = size / 2
+        parts = [
+            ((half, half, wall / 2), (cx, cy, TABLE_Z + wall / 2)),            # floor
+            ((half, wall / 2, height / 2), (cx, cy + half, TABLE_Z + height / 2)),
+            ((half, wall / 2, height / 2), (cx, cy - half, TABLE_Z + height / 2)),
+            ((wall / 2, half, height / 2), (cx + half, cy, TABLE_Z + height / 2)),
+            ((wall / 2, half, height / 2), (cx - half, cy, TABLE_Z + height / 2)),
+        ]
+        ids = []
+        for half_ext, pos in parts:
+            col = p.createCollisionShape(p.GEOM_BOX, halfExtents=half_ext)
+            vis = p.createVisualShape(p.GEOM_BOX, halfExtents=half_ext, rgbaColor=rgba)
+            ids.append(p.createMultiBody(0, col, vis, pos))
+        return ids[0]  # the floor stands for the whole tray    
 
     # ---------- helpers ----------
     def add_cube(self, name, xy, rgba):
@@ -122,3 +140,62 @@ class RobotEnv:
         clip = self._matrix() @ np.array([*xyz, 1.0])
         ndc = clip[:3] / clip[3]
         return (ndc[0] + 1) / 2 * W, (1 - ndc[1]) / 2 * H
+    
+        # ---------- perception-based actions ----------
+    def perceive(self, phrase):
+        from perception import sam_find
+        rgb, depth = self.camera()
+        for ph in ALIASES.get(phrase, [phrase]):
+            boxes = sam_find(rgb, ph)
+            if boxes:
+                break
+        found = []
+        for b in sorted(boxes, key=lambda b: -(b["conf"] or 0)):
+            xyz = self.pixel_to_world(*b["center"], depth)  # top surface point
+            found.append({"pos": xyz, "conf": b["conf"], "box": b["box"]})
+        self.last_view = (rgb, phrase, boxes)
+        return found
+
+    def pick_at(self, top_xyz):
+        if self.held:
+            return False, "already holding " + self.held[0]
+        x, y, ztop = top_xyz
+        z = ztop - 0.025  # estimated cube center
+        self.gripper(True)
+        self.move_to([x, y, z + 0.15])
+        self.move_to([x, y, z + 0.01])
+        # attach whatever object is physically closest to the hand
+        hand = np.array(self.hand_pos())
+        best, best_d = None, 1e9
+        for n in self.objects:
+            if n == "tray":
+                continue
+            d = np.linalg.norm(hand - np.array(self.get_pos(n)))
+            if d < best_d:
+                best, best_d = n, d
+        if best_d > 0.04:
+            self.move_to([x, y, z + 0.15])
+            return False, f"nothing graspable under the hand (closest {best_d:.3f} m)"
+        self.gripper(False)
+        h = p.getLinkState(self.robot, EE_LINK)
+        inv_pos, inv_orn = p.invertTransform(h[4], h[5])
+        o_pos, o_orn = p.getBasePositionAndOrientation(self.objects[best])
+        rel_pos, rel_orn = p.multiplyTransforms(inv_pos, inv_orn, o_pos, o_orn)
+        c = p.createConstraint(self.robot, EE_LINK, self.objects[best], -1, p.JOINT_FIXED,
+                               [0, 0, 0], rel_pos, [0, 0, 0], rel_orn)
+        self.held = (best, c)
+        self.move_to([x, y, z + 0.15])
+        return True, "picked object"
+
+    def pick_seen(self, phrase):
+        found = self.perceive(phrase)
+        if not found:
+            return False, f"could not see '{phrase}'"
+        return self.pick_at(found[0]["pos"])
+
+    def place_on(self, phrase):
+        found = self.perceive(phrase)
+        if not found:
+            return False, f"could not see '{phrase}'"
+        x, y, ztop = found[0]["pos"]
+        return self.place([x, y], z=ztop + 0.025)
