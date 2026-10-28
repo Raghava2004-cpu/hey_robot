@@ -199,3 +199,22 @@ class RobotEnv:
             return False, f"could not see '{phrase}'"
         x, y, ztop = found[0]["pos"]
         return self.place([x, y], z=ztop + 0.025)
+    
+    def add_cube_on(self, name, below, rgba):
+        x, y, z = self.get_pos(below)
+        body = p.loadURDF("cube_small.urdf", [x, y, z + 0.051])
+        p.changeVisualShape(body, -1, rgbaColor=rgba)
+        self.objects[name] = body
+
+    def put_aside(self):
+        if not self.held:
+            return False, "not holding anything"
+        spots = [(0.45, 0.25), (0.45, 0.0), (0.72, 0.30), (0.40, -0.05)]
+        others = [self.get_pos(n) for n in self.objects if n != self.held[0]]
+        for s in spots:
+            if all(np.hypot(s[0] - q[0], s[1] - q[1]) > 0.09 for q in others):
+                return self.place(list(s))
+        return False, "no free spot on the table"
+
+    def close(self):
+        p.disconnect()

@@ -1,10 +1,11 @@
 import ast
 
-API_METHODS = {"see", "pick", "place_on", "is_holding"}
+API_METHODS = {"see", "pick", "place_on", "is_holding", "put_aside"}
 SAFE_BUILTINS = {"len", "range", "print", "abs", "min", "max", "round"}
 MAX_ACTIONS = 30
 
 API_DOC = """
+robot.put_aside() -> True/False   (put the held object down on a free spot of the table)
 robot.see(phrase) -> list of [x, y, z] positions (top surface, meters), best match first; [] if not seen
 robot.pick(phrase) -> True/False   (pick up the object named by phrase)
 robot.place_on(phrase) -> True/False   (put the held object on top of / into the named thing)
@@ -22,6 +23,10 @@ class RobotAPI:
         self.log.append({"action": action, "arg": arg, "result": result})
         if len(self.log) > MAX_ACTIONS:
             raise RuntimeError("too many actions")
+    def put_aside(self):
+        ok, msg = self.env.put_aside()
+        self._record("put_aside", "", msg)
+        return ok    
 
     def see(self, phrase):
         found = [[round(c, 3) for c in f["pos"]] for f in self.env.perceive(phrase)]
