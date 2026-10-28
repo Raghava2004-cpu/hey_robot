@@ -1,10 +1,11 @@
 import ast
 
-API_METHODS = {"see", "pick", "place_on", "is_holding", "put_aside"}
+API_METHODS = {"see", "pick", "place_on", "is_holding", "put_aside", "ask"}
 SAFE_BUILTINS = {"len", "range", "print", "abs", "min", "max", "round"}
 MAX_ACTIONS = 30
 
 API_DOC = """
+robot.ask(question) -> short text answer from looking at the camera now, e.g. robot.ask("Which object is on top of the purple cube?") -> "yellow cube"
 robot.put_aside() -> True/False   (put the held object down on a free spot of the table)
 robot.see(phrase) -> list of [x, y, z] positions (top surface, meters), best match first; [] if not seen
 robot.pick(phrase) -> True/False   (pick up the object named by phrase)
@@ -23,6 +24,14 @@ class RobotAPI:
         self.log.append({"action": action, "arg": arg, "result": result})
         if len(self.log) > MAX_ACTIONS:
             raise RuntimeError("too many actions")
+        
+    def ask(self, question):
+        from llm import spark_vision
+        rgb, _ = self.env.camera()
+        answer = spark_vision(question, rgb)
+        self._record("ask", question, answer)
+        return answer  
+      
     def put_aside(self):
         ok, msg = self.env.put_aside()
         self._record("put_aside", "", msg)

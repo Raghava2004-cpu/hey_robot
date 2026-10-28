@@ -80,7 +80,8 @@ def learn(task, build_scene, check, use_memory=True, save=True,
                 json.dump(all_lib, open(LIBRARY, "w"), indent=2)
                 if verbose:
                     print("💾 LESSON:", lesson)
-            return {"success": True, "attempts": attempt, "code": code, "lesson": lesson}
+            return {"success": True, "attempts": attempt, "code": code, "lesson": lesson,
+                    "actions": len(log)}
 
         feedback = (f"Attempt {attempt} FAILED.\nYour code returned: {result}\n"
                     f"Action log:\n{json.dumps(log, indent=1)}\nChecker: {msg}\n"
@@ -99,4 +100,4 @@ def learn(task, build_scene, check, use_memory=True, save=True,
         if verbose:
             print("🧠 SPARK", reply.split("```")[0].strip())
 
-    return {"success": False, "attempts": max_attempts, "code": None, "lesson": ""}
+    return {"success": False, "attempts": max_attempts, "code": None, "lesson": "", "actions": 0}

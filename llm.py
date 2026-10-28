@@ -26,3 +26,16 @@ def spark(messages, effort="low"):
 def extract_code(text):
     m = re.search(r"```python\s*(.*?)```", text, re.S)
     return (m.group(1) if m else text).strip()
+def spark_vision(question, rgb):
+    from perception import _to_data_url
+    messages = [
+        {"role": "system", "content":
+            "You see a robot's top-down camera image of a table. Answer in a few words only, "
+            "using short noun phrases like 'yellow cube'. If unsure, answer 'unknown'."},
+        {"role": "user", "content": [
+            {"type": "text", "text": question},
+            {"type": "image_url", "image_url": {"url": _to_data_url(rgb)}},
+        ]},
+    ]
+    answer, _ = spark(messages, effort="low")
+    return answer.strip().strip(".").lower()
