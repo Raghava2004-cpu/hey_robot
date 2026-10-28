@@ -1,7 +1,14 @@
 [
   {
     "task": "Put the blue cube into the tray.",
-    "code": "def skill(robot):\n    if robot.is_holding():\n        robot.put_aside()\n    for _ in range(5):\n        if robot.pick(\"blue cube\"):\n            if not robot.is_holding():\n                continue\n            if robot.place_on(\"tray\"):\n                return True\n            if robot.is_holding():\n                robot.put_aside()\n        else:\n            if robot.pick(\"red cube\"):\n                robot.put_aside()\n            elif robot.pick(\"cube\"):\n                robot.put_aside()\n    return False",
-    "attempts": 3
+    "code": "def skill(robot):\n    if robot.is_holding():\n        robot.put_aside()\n    if robot.pick(\"blue cube\"):\n        if robot.place_on(\"tray\"):\n            return True\n        if robot.is_holding():\n            if robot.place_on(\"green tray\"):\n                return True\n        return False\n    if robot.pick(\"red cube\"):\n        if robot.is_holding():\n            if not robot.put_aside():\n                return False\n    if not robot.pick(\"blue cube\"):\n        if not robot.pick(\"blue block\"):\n            return False\n    if not robot.is_holding():\n        return False\n    if robot.place_on(\"tray\"):\n        return True\n    if robot.place_on(\"green tray\"):\n        return True\n    return False",
+    "attempts": 2,
+    "lesson": "If picking a target fails because it is occluded, first move aside any covering or adjacent objects to uncover it, then retry the pick."
+  },
+  {
+    "task": "Put the purple cube into the tray.",
+    "code": "def skill(robot):\n    if robot.is_holding():\n        robot.put_aside()\n    if robot.pick(\"purple cube\"):\n        if robot.place_on(\"tray\"):\n            return True\n        if robot.place_on(\"green tray\"):\n            return True\n        if robot.is_holding():\n            robot.put_aside()\n        return False\n    for other in [\"red cube\", \"blue cube\", \"green cube\", \"yellow cube\", \"orange cube\"]:\n        if robot.is_holding():\n            robot.put_aside()\n        if robot.pick(other):\n            if robot.is_holding():\n                if not robot.put_aside():\n                    return False\n        if robot.pick(\"purple cube\"):\n            if robot.place_on(\"tray\"):\n                return True\n            if robot.place_on(\"green tray\"):\n                return True\n            if robot.is_holding():\n                robot.put_aside()\n            return False\n    if robot.is_holding():\n        robot.put_aside()\n    if not robot.pick(\"purple cube\"):\n        if not robot.pick(\"purple block\"):\n            return False\n    if not robot.is_holding():\n        return False\n    if robot.place_on(\"tray\"):\n        return True\n    if robot.place_on(\"green tray\"):\n        return True\n    return False",
+    "attempts": 1,
+    "lesson": "If picking the target object fails, move aside nearby objects to uncover it and retry the pick before placing into the tray."
   }
 ]
