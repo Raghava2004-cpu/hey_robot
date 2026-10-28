@@ -7,6 +7,7 @@ EE_LINK = 11
 DOWN = p.getQuaternionFromEuler([3.14159, 0, 0])
 HOME = [0, -0.4, 0, -2.4, 0, 2.0, 0.8]
 TABLE_Z = 0.625
+W, H = 640, 480
 
 
 class RobotEnv:
@@ -95,3 +96,29 @@ class RobotEnv:
         self.step(60)
         self.move_to([xy[0], xy[1], drop_z + 0.12])
         return True, "placed " + name
+    
+        # ---------- camera ----------
+    def camera(self):
+        self._view = p.computeViewMatrix([0.55, 0, 1.45], [0.55, 0, TABLE_Z], [-1, 0, 0])
+        self._proj = p.computeProjectionMatrixFOV(60, W / H, 0.1, 3.0)
+        _, _, rgb, depth, _ = p.getCameraImage(W, H, self._view, self._proj,
+                                               renderer=p.ER_TINY_RENDERER)
+        rgb = np.reshape(rgb, (H, W, 4))[:, :, :3].astype(np.uint8)
+        depth = np.reshape(depth, (H, W))
+        return rgb, depth
+
+    def _matrix(self):
+        V = np.array(self._view).reshape(4, 4, order="F")
+        P = np.array(self._proj).reshape(4, 4, order="F")
+        return P @ V
+
+    def pixel_to_world(self, u, v, depth):
+        d = depth[int(v), int(u)]
+        ndc = np.array([2 * u / W - 1, 1 - 2 * v / H, 2 * d - 1, 1.0])
+        w = np.linalg.inv(self._matrix()) @ ndc
+        return (w[:3] / w[3]).tolist()
+
+    def world_to_pixel(self, xyz):
+        clip = self._matrix() @ np.array([*xyz, 1.0])
+        ndc = clip[:3] / clip[3]
+        return (ndc[0] + 1) / 2 * W, (1 - ndc[1]) / 2 * H
