@@ -1,12 +1,17 @@
 import json
 import os
 
-from llm import spark, extract_code
+from PIL import Image
+
+from imagine import imagine
+from llm import spark, extract_code, spark_compare
 from perception import _to_data_url
 from skills import API_DOC, RobotAPI, check_code, run_skill
 
 LIBRARY = "skills_library.json"
 DIAGNOSIS_MODEL = "muse-wonder-1.0"  # senior expert, used only after a failure
+os.makedirs("runs", exist_ok=True)
+
 BASE_SYSTEM = f"""You control a robot arm through a Python object `robot`.
 Write ONE function `def skill(robot):` that completes the task.
 Available methods:{API_DOC}
@@ -41,7 +46,7 @@ def run_attempt(code, build_scene, check, gui):
             result = run_skill(code, api)
         except Exception as e:
             result = f"crashed: {e}"
-    env.step(240)
+    env.go_home()  # move the arm out of the camera's view
     after, _ = env.camera()
     ok, msg = check(env)
     env.close()
@@ -49,19 +54,50 @@ def run_attempt(code, build_scene, check, gui):
 
 
 def learn(task, build_scene, check, use_memory=True, save=True,
-          max_attempts=3, gui=True, verbose=True):
+          max_attempts=3, gui=True, verbose=True, use_imagination=True):
     lib = load_library() if use_memory else []
+
+    # 1) IMAGINE the goal before acting (Muse Image)
+    imagined = None
+    if use_imagination:
+        try:
+            env0 = build_scene(False)
+            start, _ = env0.camera()
+            env0.close()
+            imagined = imagine(task, start)
+            Image.fromarray(imagined).save("runs/imagined.png")
+            if verbose:
+                print("🎨 IMAGINED the goal -> runs/imagined.png")
+        except Exception as e:
+            if verbose:
+                print("(imagination skipped:", str(e)[:100], ")")
+
     messages = [{"role": "system", "content": BASE_SYSTEM + memory_text(lib)},
                 {"role": "user", "content": task}]
     reply, _ = spark(messages, effort="low")
+    imagination_log = []
 
     for attempt in range(1, max_attempts + 1):
         code = extract_code(reply)
         ok, msg, result, log, before, after = run_attempt(code, build_scene, check, gui)
+        Image.fromarray(after).save(f"runs/after_{attempt}.png")
         if verbose:
             print(f"\n--- attempt {attempt} --- returned={result}  CHECK: {msg}")
             for s in log:
                 print("   ", s)
+
+        # 2) Compare REALITY with IMAGINATION (Muse Spark vision)
+        imag_note = ""
+        if imagined is not None:
+            try:
+                match, why = spark_compare(task, imagined, after)
+                imagination_log.append({"attempt": attempt, "match": match, "checker": ok})
+                imag_note = f"Imagination check: {'MATCH' if match else 'MISMATCH'} - {why}"
+                if verbose:
+                    print("👁️ ", imag_note)
+            except Exception as e:
+                if verbose:
+                    print("(imagination check skipped:", str(e)[:80], ")")
 
         if ok:
             lesson = ""
@@ -81,21 +117,23 @@ def learn(task, build_scene, check, use_memory=True, save=True,
                 if verbose:
                     print("💾 LESSON:", lesson)
             return {"success": True, "attempts": attempt, "code": code, "lesson": lesson,
-                    "actions": len(log)}
+                    "actions": len(log), "imagination": imagination_log}
 
+        # 3) DIAGNOSE the failure (Muse Wonder), with the imagined goal as extra evidence
         feedback = (f"Attempt {attempt} FAILED.\nYour code returned: {result}\n"
                     f"Action log:\n{json.dumps(log, indent=1)}\nChecker: {msg}\n"
-                    "Image 1 = camera view before the attempt. Image 2 = after.\n"
-                    "First write 'DIAGNOSIS:' with 1-2 sentences on what went wrong and why. "
-                    "Then write the fixed skill in one ```python block.")
-        messages += [
-            {"role": "assistant", "content": reply},
-            {"role": "user", "content": [
-                {"type": "text", "text": feedback},
-                {"type": "image_url", "image_url": {"url": _to_data_url(before)}},
-                {"type": "image_url", "image_url": {"url": _to_data_url(after)}},
-            ]},
-        ]
+                    + (imag_note + "\n" if imag_note else "")
+                    + "Image 1 = camera view before the attempt. Image 2 = after."
+                    + (" Image 3 = the imagined goal." if imagined is not None else "")
+                    + "\nFirst write 'DIAGNOSIS:' with 1-2 sentences on what went wrong and why. "
+                      "Then write the fixed skill in one ```python block.")
+        content = [{"type": "text", "text": feedback},
+                   {"type": "image_url", "image_url": {"url": _to_data_url(before)}},
+                   {"type": "image_url", "image_url": {"url": _to_data_url(after)}}]
+        if imagined is not None:
+            content.append({"type": "image_url", "image_url": {"url": _to_data_url(imagined)}})
+        messages += [{"role": "assistant", "content": reply},
+                     {"role": "user", "content": content}]
         try:
             reply, _ = spark(messages, effort="medium", model=DIAGNOSIS_MODEL)
             who = "WONDER"
@@ -107,4 +145,5 @@ def learn(task, build_scene, check, use_memory=True, save=True,
         if verbose:
             print(f"🧠 {who}", reply.split("```")[0].strip())
 
-    return {"success": False, "attempts": max_attempts, "code": None, "lesson": "", "actions": 0}
+    return {"success": False, "attempts": max_attempts, "code": None, "lesson": "",
+            "actions": 0, "imagination": imagination_log}

@@ -50,3 +50,27 @@ def spark_vision(question, rgb):
     ]
     answer, _ = spark(messages, effort="low")
     return answer.strip().strip(".").lower()
+
+def spark_compare(task, imagined, real):
+    """Compare the imagined goal with the real result. Returns (match, reason)."""
+    from perception import _to_data_url
+    messages = [
+        {"role": "system", "content":
+            "You verify a robot's work. Image 1 is the IMAGINED goal scene. Image 2 is the REAL "
+            "camera view after the robot acted. Ignore the robot arm's pose, small position "
+            "offsets, image style and resolution, and objects the task does not mention (they may "
+            "end up in different places). Judge only whether the real scene achieves "
+            "the task the way the goal shows. Reply with MATCH or MISMATCH on the first line, "
+            "then one short reason."},
+        {"role": "user", "content": [
+            {"type": "text", "text": f"Task: {task}"},
+            {"type": "image_url", "image_url": {"url": _to_data_url(imagined)}},
+            {"type": "image_url", "image_url": {"url": _to_data_url(real)}},
+        ]},
+    ]
+    answer, _ = spark(messages, effort="low")
+    lines = answer.strip().splitlines()
+    first = lines[0].upper() if lines else ""
+    match = "MATCH" in first and "MISMATCH" not in first
+    reason = " ".join(lines[1:]).strip() or first
+    return match, reason

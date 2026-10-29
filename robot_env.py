@@ -82,6 +82,11 @@ class RobotEnv:
         for j in (9, 10):
             p.setJointMotorControl2(self.robot, j, p.POSITION_CONTROL, width, force=20)
         self.step(60)
+    def go_home(self):
+        for j, q in enumerate(HOME):
+            p.setJointMotorControl2(self.robot, j, p.POSITION_CONTROL, q,
+                                    force=240, maxVelocity=1.5)
+        self.step(300)    
 
     def pick(self, name):
         if self.held:
