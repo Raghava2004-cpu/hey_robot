@@ -20,8 +20,8 @@ Check return values. Return True if the task is done, else False.
 Reply with only one ```python code block."""
 
 
-def load_library():
-    return json.load(open(LIBRARY)) if os.path.exists(LIBRARY) else []
+def load_library(path=LIBRARY):
+    return json.load(open(path)) if os.path.exists(path) else []
 
 
 def memory_text(lib):
@@ -36,7 +36,7 @@ def memory_text(lib):
 
 def run_attempt(code, build_scene, check, gui):
     env = build_scene(gui)
-    before, _ = env.camera()
+    before, _ = env.camera(env.main_view)
     api = RobotAPI(env)
     problem = check_code(code)
     if problem:
@@ -47,22 +47,22 @@ def run_attempt(code, build_scene, check, gui):
         except Exception as e:
             result = f"crashed: {e}"
     env.go_home()  # move the arm out of the camera's view
-    after, _ = env.camera()
+    after, _ = env.camera(env.main_view)
     ok, msg = check(env)
     env.close()
     return ok, msg, result, api.log, before, after
 
 
-def learn(task, build_scene, check, use_memory=True, save=True,
-          max_attempts=3, gui=True, verbose=True, use_imagination=True):
-    lib = load_library() if use_memory else []
+def learn(task, build_scene, check, use_memory=True, save=True, max_attempts=3,
+          gui=True, verbose=True, use_imagination=True, library=LIBRARY):
+    lib = load_library(library) if use_memory else []
 
     # 1) IMAGINE the goal before acting (Muse Image)
     imagined = None
     if use_imagination:
         try:
             env0 = build_scene(False)
-            start, _ = env0.camera()
+            start, _ = env0.camera(env0.main_view)
             env0.close()
             imagined = imagine(task, start)
             Image.fromarray(imagined).save("runs/imagined.png")
@@ -107,13 +107,14 @@ def learn(task, build_scene, check, use_memory=True, save=True,
                     {"role": "user", "content":
                         "It worked. Write ONE short general LESSON (one sentence) that would "
                         "help with similar future tasks in other layouts and with other objects. "
+                        "If you discovered a numeric correction, include the number. "
                         "Start with 'LESSON:'."},
                 ]
                 r, _ = spark(messages, effort="low")
                 lesson = r.split("LESSON:", 1)[-1].strip().splitlines()[0]
-                all_lib = load_library()
+                all_lib = load_library(library)
                 all_lib.append({"task": task, "code": code, "attempts": attempt, "lesson": lesson})
-                json.dump(all_lib, open(LIBRARY, "w"), indent=2)
+                json.dump(all_lib, open(library, "w"), indent=2)
                 if verbose:
                     print("💾 LESSON:", lesson)
             return {"success": True, "attempts": attempt, "code": code, "lesson": lesson,

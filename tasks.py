@@ -1,12 +1,16 @@
+import random
+
 from robot_env import RobotEnv
 
 
-def in_tray(env, name):
+def in_tray(env, name, label=None):
+    label = label or f"{name} cube"
     tray, pos = env.get_pos("tray"), env.get_pos(name)
     ok = abs(pos[0] - tray[0]) < 0.1 and abs(pos[1] - tray[1]) < 0.1
-    return ok, f"{name} cube is in the tray" if ok else f"{name} cube is NOT in the tray"
+    return ok, f"{label} is in the tray" if ok else f"{label} is NOT in the tray"
 
 
+# ---------- cube tasks (hidden objects) ----------
 def scene_blue_hidden(gui=True):
     env = RobotEnv(gui=gui)
     env.add_cube("blue", [0.58, 0.12], [0, 0, 1, 1])
@@ -32,7 +36,6 @@ TASKS = {
     "purple_hidden": ("Put the purple cube into the tray.", scene_purple_hidden,
                       lambda env: in_tray(env, "purple")),
 }
-import random
 
 COLORS = {"red": [1, 0, 0, 1], "blue": [0, 0, 1, 1], "purple": [0.5, 0, 0.8, 1],
           "yellow": [1, 0.9, 0, 1], "orange": [1, 0.5, 0, 1]}
@@ -62,3 +65,26 @@ def random_hidden_task(seed):
 
     task = f"Put the {target} cube into the tray."
     return task, build, (lambda env: in_tray(env, target))
+
+
+# ---------- throw tasks (tray out of reach, hidden drag) ----------
+HIDDEN_DRAG = 0.3  # the robot does NOT know this
+
+
+def throw_scene(tray_xy, ball_xy=(0.50, 0.15)):
+    def build(gui=False):
+        env = RobotEnv(gui=gui, tray_xy=tray_xy)
+        env.main_view = "wide"
+        env.add_ball("ball", list(ball_xy), [1, 0.5, 0, 1], drag=HIDDEN_DRAG)
+        env.step(120)
+        return env
+    return build
+
+
+THROW_TEXT = "Throw the orange ball into the tray. The tray is out of the arm's reach."
+THROW_TASKS = {
+    "throw_A": (THROW_TEXT, throw_scene((1.05, 0.0)),
+                lambda env: in_tray(env, "ball", "orange ball")),
+    "throw_B": (THROW_TEXT, throw_scene((1.15, 0.18)),
+                lambda env: in_tray(env, "ball", "orange ball")),
+}

@@ -12,11 +12,13 @@ ALIASES = {"tray": ["green box", "green tray", "green container"]}
 VIEWS = {
     "top": ([0.55, 0, 1.45], [0.55, 0, TABLE_Z], [-1, 0, 0]),
     "side": ([0.55, 0.80, 1.10], [0.58, 0.05, TABLE_Z], [0, 0, 1]),
+    "wide": ([0.60, 0, 2.2], [0.70, 0, TABLE_Z], [-1, 0, 0]),
 }
+RELEASE = [0.35, 0.0, 0.95]  # where the hand releases a throw
 
 
 class RobotEnv:
-    def __init__(self, gui=True):
+    def __init__(self, gui=True, tray_xy=(0.6, -0.25)):
         self.gui = gui
         p.connect(p.GUI if gui else p.DIRECT)
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
@@ -28,8 +30,9 @@ class RobotEnv:
             p.resetJointState(self.robot, j, q)
         self.objects = {}
         self.held = None  # (name, constraint_id)
-        self.objects["tray"] = self.make_tray([0.6, -0.25])
+        self.objects["tray"] = self.make_tray(list(tray_xy))
         self.hover_hook = None  # test/demo hook: runs while the arm hovers above a target
+        self.main_view = "top"  # which camera shows the whole task
     
     def make_tray(self, center, size=0.20, wall=0.01, height=0.05, rgba=(0.1, 0.75, 0.2, 1)):
         cx, cy = center
@@ -249,3 +252,30 @@ class RobotEnv:
 
     def close(self):
         p.disconnect()
+    
+    def add_ball(self, name, xy, rgba, radius=0.025, mass=0.1, drag=0.04):
+        col = p.createCollisionShape(p.GEOM_SPHERE, radius=radius)
+        vis = p.createVisualShape(p.GEOM_SPHERE, radius=radius, rgbaColor=rgba)
+        body = p.createMultiBody(mass, col, vis, [xy[0], xy[1], TABLE_Z + radius + 0.005])
+        p.changeDynamics(body, -1, linearDamping=drag, restitution=0.2,
+                         lateralFriction=0.8, rollingFriction=0.01, spinningFriction=0.01)
+        self.objects[name] = body
+
+    def toss(self, speed, angle_deg, heading_deg):
+        """Simplified throw: release the held object at RELEASE with the given velocity."""
+        if not self.held:
+            return False, "not holding anything"
+        self.move_to(RELEASE, steps=240)
+        name, c = self.held
+        body = self.objects[name]
+        for link in range(-1, p.getNumJoints(self.robot)):  # don't let the hand hit the throw
+            p.setCollisionFilterPair(self.robot, body, link, -1, 0)
+        p.removeConstraint(c)
+        self.held = None
+        th, ps = np.radians(angle_deg), np.radians(heading_deg)
+        v = [speed * np.cos(th) * np.cos(ps), speed * np.cos(th) * np.sin(ps), speed * np.sin(th)]
+        p.resetBaseVelocity(body, linearVelocity=v)
+        self.gripper(True)
+        self.step(600)  # flight + landing
+        self.go_home()
+        return True, f"tossed {name}: {speed:.2f} m/s, {angle_deg:.1f} deg, heading {heading_deg:.1f} deg"    
