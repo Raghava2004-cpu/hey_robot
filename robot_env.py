@@ -9,6 +9,10 @@ HOME = [0, -0.4, 0, -2.4, 0, 2.0, 0.8]
 TABLE_Z = 0.625
 W, H = 640, 480
 ALIASES = {"tray": ["green box", "green tray", "green container"]}
+VIEWS = {
+    "top": ([0.55, 0, 1.45], [0.55, 0, TABLE_Z], [-1, 0, 0]),
+    "side": ([0.55, 0.80, 1.10], [0.58, 0.05, TABLE_Z], [0, 0, 1]),
+}
 
 
 class RobotEnv:
@@ -25,6 +29,7 @@ class RobotEnv:
         self.objects = {}
         self.held = None  # (name, constraint_id)
         self.objects["tray"] = self.make_tray([0.6, -0.25])
+        self.hover_hook = None  # test/demo hook: runs while the arm hovers above a target
     
     def make_tray(self, center, size=0.20, wall=0.01, height=0.05, rgba=(0.1, 0.75, 0.2, 1)):
         cx, cy = center
@@ -116,8 +121,8 @@ class RobotEnv:
         return True, "placed " + name
     
         # ---------- camera ----------
-    def camera(self):
-        self._view = p.computeViewMatrix([0.55, 0, 1.45], [0.55, 0, TABLE_Z], [-1, 0, 0])
+    def camera(self, view="top"):
+        self._view = p.computeViewMatrix(*VIEWS[view])
         self._proj = p.computeProjectionMatrixFOV(60, W / H, 0.1, 3.0)
         _, _, rgb, depth, _ = p.getCameraImage(W, H, self._view, self._proj,
                                                renderer=p.ER_TINY_RENDERER)
@@ -142,9 +147,9 @@ class RobotEnv:
         return (ndc[0] + 1) / 2 * W, (1 - ndc[1]) / 2 * H
     
         # ---------- perception-based actions ----------
-    def perceive(self, phrase):
+    def perceive(self, phrase, view="top"):
         from perception import sam_find
-        rgb, depth = self.camera()
+        rgb, depth = self.camera(view)
         for ph in ALIASES.get(phrase, [phrase]):
             boxes = sam_find(rgb, ph)
             if boxes:
@@ -186,12 +191,33 @@ class RobotEnv:
         self.held = (best, c)
         self.move_to([x, y, z + 0.15])
         return True, "picked object"
-
+    
     def pick_seen(self, phrase):
-        found = self.perceive(phrase)
-        if not found:
+        top = self.perceive(phrase, "top")
+        if not top:
             return False, f"could not see '{phrase}'"
-        return self.pick_at(found[0]["pos"])
+        side0 = self.perceive(phrase, "side")  # reference photo from the side camera
+        x, y, ztop = top[0]["pos"]
+        self.gripper(True)
+        self.move_to([x, y, ztop + 0.125])     # hover above the target
+
+        if self.hover_hook:
+            self.hover_hook()
+            self.step(120)
+
+        note = ""
+        if side0:                               # look again from the side
+            side1 = self.perceive(phrase, "side")
+            if not side1:
+                return False, f"'{phrase}' disappeared from view"
+            dx = side1[0]["pos"][0] - side0[0]["pos"][0]
+            dy = side1[0]["pos"][1] - side0[0]["pos"][1]
+            shift = (dx * dx + dy * dy) ** 0.5
+            if shift > 0.02:
+                x, y = x + dx, y + dy
+                note = f" (target moved {shift * 100:.0f} cm, re-aimed)"
+        ok, msg = self.pick_at([x, y, ztop])
+        return ok, msg + note
 
     def place_on(self, phrase):
         found = self.perceive(phrase)
