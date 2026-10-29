@@ -2,6 +2,17 @@ import os
 import re
 
 import requests
+import time
+
+
+def post_retry(*args, **kwargs):
+    for i in range(4):
+        try:
+            return requests.post(*args, **kwargs)
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            if i == 3:
+                raise
+            time.sleep(5 * (i + 1))  # wait 5s, 10s, 15s, then try again
 
 CHAT_URL = "https://api.meta.ai/v1/chat/completions"
 MODEL = "muse-spark-1.3-contributor"

@@ -1,7 +1,8 @@
 import ast
 
 API_METHODS = {"see", "pick", "place_on", "is_holding", "put_aside", "ask"}
-SAFE_BUILTINS = {"len", "range", "print", "abs", "min", "max", "round"}
+SAFE_BUILTINS = {"len", "range", "print", "abs", "min", "max", "round", "str", "int",
+                 "float", "bool", "list", "enumerate", "sorted", "any", "all", "isinstance"}
 MAX_ACTIONS = 30
 
 API_DOC = """

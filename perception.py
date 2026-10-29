@@ -4,8 +4,11 @@ import json
 import os
 import re
 
+
+
 import requests
 from PIL import Image, ImageDraw
+from llm import post_retry
 
 API_URL = "https://api.meta.ai/v1/responses"
 BOX_RE = re.compile(r"<\|box;([^|]*)\|>")
@@ -32,7 +35,7 @@ def sam_find(rgb, phrase):
         "stream": True,
         "metadata": {"include_confidence": "true", "mask_encoding": "one_bit"},
     }
-    r = requests.post(
+    r = post_retry(
         API_URL,
         headers={
             "Authorization": "Bearer " + os.environ["MODEL_API_KEY"],

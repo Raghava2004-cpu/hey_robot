@@ -1,0 +1,166 @@
+{
+  "no_memory": [
+    {
+      "success": true,
+      "attempts": 2,
+      "lesson": "",
+      "actions": 7,
+      "seed": 1,
+      "task": "Put the blue cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 2,
+      "lesson": "",
+      "actions": 7,
+      "seed": 2,
+      "task": "Put the red cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 2,
+      "lesson": "",
+      "actions": 6,
+      "seed": 3,
+      "task": "Put the blue cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 3,
+      "lesson": "",
+      "actions": 5,
+      "seed": 4,
+      "task": "Put the blue cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 2,
+      "lesson": "",
+      "actions": 7,
+      "seed": 5,
+      "task": "Put the orange cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 3,
+      "lesson": "",
+      "actions": 30,
+      "seed": 6,
+      "task": "Put the orange cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 3,
+      "lesson": "",
+      "actions": 5,
+      "seed": 7,
+      "task": "Put the purple cube into the tray."
+    },
+    {
+      "success": false,
+      "attempts": 3,
+      "lesson": "",
+      "actions": 0,
+      "seed": 8,
+      "task": "Put the blue cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 2,
+      "lesson": "",
+      "actions": 6,
+      "seed": 9,
+      "task": "Put the yellow cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 3,
+      "lesson": "",
+      "actions": 6,
+      "seed": 10,
+      "task": "Put the orange cube into the tray."
+    }
+  ],
+  "with_memory": [
+    {
+      "success": true,
+      "attempts": 1,
+      "lesson": "",
+      "actions": 6,
+      "seed": 1,
+      "task": "Put the blue cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 1,
+      "lesson": "",
+      "actions": 28,
+      "seed": 2,
+      "task": "Put the red cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 1,
+      "lesson": "",
+      "actions": 6,
+      "seed": 3,
+      "task": "Put the blue cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 1,
+      "lesson": "",
+      "actions": 6,
+      "seed": 4,
+      "task": "Put the blue cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 1,
+      "lesson": "",
+      "actions": 6,
+      "seed": 5,
+      "task": "Put the orange cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 1,
+      "lesson": "",
+      "actions": 8,
+      "seed": 6,
+      "task": "Put the orange cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 1,
+      "lesson": "",
+      "actions": 9,
+      "seed": 7,
+      "task": "Put the purple cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 2,
+      "lesson": "",
+      "actions": 6,
+      "seed": 8,
+      "task": "Put the blue cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 1,
+      "lesson": "",
+      "actions": 6,
+      "seed": 9,
+      "task": "Put the yellow cube into the tray."
+    },
+    {
+      "success": true,
+      "attempts": 1,
+      "lesson": "",
+      "actions": 8,
+      "seed": 10,
+      "task": "Put the orange cube into the tray."
+    }
+  ]
+}
