@@ -6,7 +6,7 @@ from perception import _to_data_url
 from skills import API_DOC, RobotAPI, check_code, run_skill
 
 LIBRARY = "skills_library.json"
-
+DIAGNOSIS_MODEL = "muse-wonder-1.0"  # senior expert, used only after a failure
 BASE_SYSTEM = f"""You control a robot arm through a Python object `robot`.
 Write ONE function `def skill(robot):` that completes the task.
 Available methods:{API_DOC}
@@ -96,8 +96,15 @@ def learn(task, build_scene, check, use_memory=True, save=True,
                 {"type": "image_url", "image_url": {"url": _to_data_url(after)}},
             ]},
         ]
-        reply, _ = spark(messages, effort="medium")
+        try:
+            reply, _ = spark(messages, effort="medium", model=DIAGNOSIS_MODEL)
+            who = "WONDER"
+        except Exception as e:
+            if verbose:
+                print("(Wonder unavailable, using Spark:", str(e)[:80], ")")
+            reply, _ = spark(messages, effort="medium")
+            who = "SPARK"
         if verbose:
-            print("🧠 SPARK", reply.split("```")[0].strip())
+            print(f"🧠 {who}", reply.split("```")[0].strip())
 
     return {"success": False, "attempts": max_attempts, "code": None, "lesson": "", "actions": 0}
