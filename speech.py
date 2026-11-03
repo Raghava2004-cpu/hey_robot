@@ -61,7 +61,8 @@ class _Speaker:
                     done.set()
 
     def say(self, text, wait=False, important=False):
-        text = " ".join(str(text).split())
+        import home
+        text = home.to_display(" ".join(str(text).split()))      # --home: "station C" -> "the bedside table"
         if not text:
             return
         print(f"🔊 {text}")

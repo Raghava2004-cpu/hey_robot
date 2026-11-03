@@ -8,6 +8,7 @@ python command_center.py --text "throw the ball into the bin"     # typed order 
 python command_center.py --manual               # Spark routes the order, a scripted plan acts (fast)
 python command_center.py --loop                 # keep taking orders, one after another
 python command_center.py --faults               # real-world faults on: grasps slip, a worker moves an item
+python command_center.py --home                 # the same robots in a home: kitchen counter, dining table, bed, sofa
 """
 import json
 import os
@@ -16,6 +17,8 @@ import sys
 
 import pybullet as p
 
+if "--home" in sys.argv:             # before the imports below: they read it (the storeroom is a 4th place)
+    os.environ["HEYROBOT_HOME"] = "1"
 from skill_tasks import ITEMS, PLACES, run_plan, task_for
 from speech import say
 from team_skills import MAP_FILE
@@ -25,6 +28,8 @@ MANUAL = "--manual" in ARGS
 FAULTS = "--faults" in ARGS          # real-world faults: slipping grasps, a worker moves an item
 LOOP = "--loop" in ARGS
 SHOW = "--show" in ARGS              # show and tell: hold up a real object to the webcam ("bring me one of these")
+if "--home" in ARGS:                 # the same robots and skills in a home (kitchen, dining table, bed, sofa)
+    os.environ["HEYROBOT_HOME"] = "1"
 if "--fast" in ARGS:                 # the 3D window runs as fast as it can (no real-time wait)
     os.environ["SKILLFORGE_FAST"] = "1"
 SKILLS = {"deliver": "bring one or more items to the packing station and put them in the tray",
@@ -287,6 +292,12 @@ def main():
             muse_eye.set_order(order)
         except Exception:
             pass
+        if order and os.environ.get("HEYROBOT_HOME") == "1":
+            import home
+            inside = home.to_internal(order)       # "the bedside table" -> "station C" (the names the skills know)
+            if inside != order:
+                print(f"🏠 HOME names -> {inside}")
+            order = inside
         if not order:
             print('Nothing was heard. Start right after "Speak now", or use --text "your order".')
         else:

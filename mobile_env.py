@@ -53,17 +53,12 @@ class MobileEnv:
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         p.setGravity(0, 0, -9.81)
 
-        # ---- warehouse look: concrete floor, yellow safety lines ----
-        plane = p.loadURDF("plane.urdf")
-        p.changeVisualShape(plane, -1, rgbaColor=[1, 1, 1, 0])
-        floor_v = p.createVisualShape(p.GEOM_BOX, halfExtents=[8, 8, 0.002],
-                                      rgbaColor=[0.62, 0.62, 0.6, 1])
-        p.createMultiBody(0, -1, floor_v, [0, 0, -0.002])
-        line_v = p.createVisualShape(p.GEOM_BOX, halfExtents=[4.0, 0.03, 0.001],
-                                     rgbaColor=[0.95, 0.8, 0.1, 1])
-        for y in (-2.4, 2.4):
-            p.createMultiBody(0, -1, line_v, [0, y, 0.001])
-        self._decorate()
+        # ---- warehouse look: concrete floor, yellow safety lines (or the home look with --home) ----
+        import home
+        if home.active():
+            home.build_room(p)
+        else:
+            self._warehouse_floor()
         if gui:
             p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
             p.configureDebugVisualizer(p.COV_ENABLE_SHADOWS, 1)
@@ -135,6 +130,18 @@ class MobileEnv:
                 print("control room off:", e)
 
     # ---------- world building ----------
+    def _warehouse_floor(self):
+        plane = p.loadURDF("plane.urdf")
+        p.changeVisualShape(plane, -1, rgbaColor=[1, 1, 1, 0])
+        floor_v = p.createVisualShape(p.GEOM_BOX, halfExtents=[8, 8, 0.002],
+                                      rgbaColor=[0.62, 0.62, 0.6, 1])
+        p.createMultiBody(0, -1, floor_v, [0, 0, -0.002])
+        line_v = p.createVisualShape(p.GEOM_BOX, halfExtents=[4.0, 0.03, 0.001],
+                                     rgbaColor=[0.95, 0.8, 0.1, 1])
+        for y in (-2.4, 2.4):
+            p.createMultiBody(0, -1, line_v, [0, y, 0.001])
+        self._decorate()
+
     def _decorate(self):
         """Warehouse look (visual only, no collisions): walls with a dark baseboard, a floor-tile grid,
         blue work-zone squares around the middle. Kept plain so the cameras still see items clearly."""
@@ -169,13 +176,16 @@ class MobileEnv:
             return
         for name, (x, y, yaw) in self.locations.items():
             cx, cy = x + 0.85 * math.cos(yaw), y + 0.85 * math.sin(yaw)
-            p.addUserDebugText(name.upper(), [cx, cy, 1.05], textColorRGB=[0.05, 0.2, 0.55], textSize=1.4)
+            import home
+            p.addUserDebugText(home.label(name).upper(), [cx, cy, 1.05], textColorRGB=[0.05, 0.2, 0.55], textSize=1.4)
 
-    def add_table(self, name, center, size=(0.5, 0.6), height=0.45, rgba=TABLE_COLOR):
+    def add_table(self, name, center, size=(0.5, 0.6), height=0.45, rgba=TABLE_COLOR, yaw=0.0):
         half = [size[0] / 2, size[1] / 2, height / 2]
         col = p.createCollisionShape(p.GEOM_BOX, halfExtents=half)
-        vis = p.createVisualShape(p.GEOM_BOX, halfExtents=half, rgbaColor=rgba)
-        self.objects[name] = p.createMultiBody(0, col, vis, [center[0], center[1], height / 2])
+        import home
+        vis = p.createVisualShape(p.GEOM_BOX, halfExtents=half, rgbaColor=home.table_color(name, rgba))
+        self.objects[name] = p.createMultiBody(0, col, vis, [center[0], center[1], height / 2],
+                                               p.getQuaternionFromEuler([0, 0, yaw]))
         self.static.add(name)
         return height
 
@@ -211,7 +221,9 @@ class MobileEnv:
         self.free_spots[name] = spots
 
     def add_station(self, name, center, yaw, rgba=TABLE_COLOR):
-        top = self.add_table(name, center, rgba=rgba)
+        # a station facing a diagonal (home mode's storeroom) gets its table turned to face the robot squarely;
+        # the usual stations (0, 90, 180, 270 degrees) keep their table exactly as before
+        top = self.add_table(name, center, rgba=rgba, yaw=yaw if abs(math.sin(2 * yaw)) > 0.1 else 0.0)
         dx, dy = math.cos(yaw), math.sin(yaw)
         lx, ly = -dy, dx
         edge = 0.25 if abs(dx) > 0.5 else 0.30

@@ -12,7 +12,8 @@ from store_tasks import store_scene
 from team_skills import TeamAPI
 
 WORDS = {"zero": 0, "no": 0, "none": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6}
-PLACES = ["station A", "station B", "station C"]
+import home
+PLACES = home.places()          # + station D (the storeroom) in home mode
 
 
 def truth_on(env, place):

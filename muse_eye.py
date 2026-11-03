@@ -259,10 +259,15 @@ class ControlRoom:
         d.rectangle([x0, 0, x0 + self.PANEL, height], fill=(16, 20, 30))
         d.text((x0 + 10, 8), "MUSE BRAIN  (Meta models at work)", fill=(255, 210, 90), font=_font(16))
         y = 34
-        order = STATE["order"] or "(waiting for a voice order)"
+        import home
+        order = home.to_display(STATE["order"]) or "(waiting for a voice order)"
         for k in range(0, min(len(order), 116), 58):
             d.text((x0 + 10, y), ("ORDER: " if k == 0 else "       ") + order[k:k + 58], fill=(200, 230, 255), font=mono)
             y += 15
+        if home.active():                    # the program keeps the inside names: show how they map
+            for line in home.LEGEND:
+                d.text((x0 + 10, y), line[:62], fill=(255, 170, 120), font=mono)
+                y += 15
         counts = _model_counts()
         d.text((x0 + 10, y + 4), "  ".join(f"{n} {c}" for n, c in counts.items()) or "no model calls yet",
                fill=(150, 255, 170), font=mono)
@@ -282,7 +287,7 @@ class ControlRoom:
         y += 16
         for tag, text in STATE["events"][-12:]:
             d.text((x0 + 10, y), f"[{tag}]", fill=TAG_COLORS.get(tag, (220, 220, 220)), font=mono)
-            d.text((x0 + 92, y), text[:52], fill=(220, 225, 235), font=mono)
+            d.text((x0 + 92, y), home.to_display(text)[:52], fill=(220, 225, 235), font=mono)
             y += 15
 
     def tick(self):
@@ -310,7 +315,8 @@ class ControlRoom:
         for i, t in enumerate(tiles[:4]):
             board.paste(t, ((i % 2) * w, 34 + (i // 2) * h))
         d = ImageDraw.Draw(board)
-        d.text((8, 8), f"HEY ROBOT CONTROL ROOM  |  {STATE['action'][:60]}", fill=(255, 255, 255), font=_font(16))
+        import home
+        d.text((8, 8), f"HEY ROBOT CONTROL ROOM  |  {home.to_display(STATE['action'])[:60]}", fill=(255, 255, 255), font=_font(16))
         self._brain(d, 2 * w, board.height)
         arr = np.asarray(board)
         if self.save_frames:

@@ -142,6 +142,31 @@ product is the pear"); **SAM 3.1** draws its box (`runs/real/show_XX.png`); "the
 product, and the order goes through the normal pipeline (SafetyShield → router → robots → checks).
 It links the real world to a robot action in one sentence.
 
+## Home mode: the same robots help people at home (`--home`)
+
+![The robot team in home mode](docs/home_mode.png)
+
+`python command_center.py --loop --home`. The same robot team and the same 9 skills, in a home with **two rooms**:
+a living room with a **kitchen counter**, a **dining table**, a **bedside table** (grandpa resting in bed) and a
+**sofa table** with the serving tray (grandma on the sofa), and a **storeroom** behind a door. Someone who cannot
+walk far or reach high just says:
+
+- *"I'm on the sofa, bring me the soup can from the storeroom."* → the drone checks the rooms, the robot drives
+  through the door into the storeroom, picks the can and brings it to the serving tray
+- *"Get the strawberry from the top kitchen shelf and put it on the bedside table."* → drone + robot hand-off
+- *"Clear the dining table and put everything in the serving tray."* → a new job, planned by Spark
+
+**Honest note:** the four living-room work spots keep their warehouse names inside (station A = kitchen counter,
+B = dining table, C = bedside table, packing station = sofa table), so every tested move, grasp, camera and
+check is reused. The storeroom table is a new 5th work spot (station D, home mode only); it sits on the diagonal
+through the gap between the tables, so the robot's normal straight-line driving goes through the door. The
+spoken order is translated to the inside names before Muse Spark routes it; what the robot says, the place
+labels and the Muse Brain panel use the home names (the panel also shows the mapping). Walls, furniture and
+people are visual only, so they can never block the robot or the drone.
+With the scripted plans, all 9 skills pass in home mode, and 5/5 storeroom jobs pass (fetch from it, put into
+it) **[sim mask]**. With the real models: move to the bedside table, a strawberry to the sofa, and clearing the
+dining table (a new job) all passed on the first attempt **[real]**.
+
 ## The Muse Brain panel (what the video shows)
 
 The control-room window has a **MUSE BRAIN** column next to the four cameras: the spoken order, the number of
@@ -154,7 +179,7 @@ calls to each Meta model, **the program Muse Spark wrote with the running line l
 - **Grasping:** the fingers close and must **touch the item on both finger pads, with the item between them**
   (measured contact and finger gap); otherwise the grasp fails. A flat box wider than the open gripper is
   stocked square to the table edge, and if a grip fails the robot looks again and grips with the hand turned
-  90°. While carrying, a joint keeps the item steady, but it **breaks above 60 N** (a real slip).
+  90° (also when it takes an item out of its own basket). While carrying, a joint keeps the item steady, but it **breaks above 60 N** (a real slip).
 - **Throwing:** real ballistics with a hidden drag force; the robot measures a test throw and corrects its speed.
 - **Drone:** wind and random gusts act on the drone; the PD autopilot and the RL reflex fight them.
 - **Hand-off:** the item really falls 14 cm into a basket moving at 0.2 m/s.
@@ -270,13 +295,14 @@ python vision_bench.py                             # sim-to-real test with Muse 
 python real_eye.py --photos real_photos            # REAL photos: SAM 3.1 + Spark find and name real objects
 python real_eye.py --webcam                        # live webcam: ask by voice, Spark + SAM answer out loud
 python command_center.py --loop --show             # show and tell: hold up a real object, "bring me one of these"
+python command_center.py --loop --home             # home mode: two rooms (living room + storeroom), people
 python safety_test.py                              # red-team test: 25 harmful + 20 normal orders
 python ask_spark.py --file README.md "question"    # ask Muse Spark about the project
 python -m pytest test_ros2_bridge.py               # ROS 2 bridge in mock mode (no ROS needed)
 ```
 
 Options: `--quiet` (robot does not speak), `--fast` (no real-time wait in the 3D window), `--faults` (hidden slips and moved items),
-`--manual` (scripted plan instead of Spark's program). Set `SKILLFORGE_NO_WINDOW=1` to hide the camera window.
+`--manual` (scripted plan instead of Spark's program), `--home` (home mode). Set `SKILLFORGE_NO_WINDOW=1` to hide the camera window.
 
 ## Files
 
@@ -292,6 +318,7 @@ Options: `--quiet` (robot does not speak), `--fast` (no real-time wait in the 3D
 | `store_tasks.py`, `mission_tasks.py`, `audit_tasks.py`, `throw_skills.py`, `ask_tasks.py` | Scenes and skills |
 | `perception.py`, `llm.py`, `imagine.py`, `voice.py` | Thin clients for SAM 3.1, Muse Spark/Wonder, Muse Image, Muse Voice Transcribe |
 | `speech.py` | The robot talks back (Windows built-in voice) |
+| `home.py` | Home mode (`--home`): two rooms, people, the storeroom, and the home names for the same robots and skills |
 | `real_eye.py` | The same SAM 3.1 + Spark pipeline on real phone photos and a live webcam |
 | `show_tell.py` | Show and tell: a real object held up to the webcam becomes the item in a voice order |
 | `usage_meter.py` | Counts every Meta model call and its time per job |

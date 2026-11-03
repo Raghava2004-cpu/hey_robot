@@ -522,6 +522,13 @@ class TeamAPI:
             self._record("take_from_basket", item, f"the basket camera does not see the {item}")
             return False
         ok, msg = env.pick_from_back(found["grasp"])
+        if not ok and msg.startswith("the fingers could not close"):
+            # like pick(): look again (the touch may have moved it) and try with the hand turned 90 degrees
+            again = env.look_in_basket(item)
+            if again:
+                env.grip_yaw = math.pi / 2
+                ok, msg = env.pick_from_back(again["grasp"])
+                env.grip_yaw = 0.0
         self._record("take_from_basket", item, msg)
         return ok
 

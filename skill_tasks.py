@@ -13,7 +13,8 @@ from throw_skills import THROW_DOC, THROW_METHODS, THROW_TEXT, ThrowAPI, throw_c
 
 ITEMS = ["banana", "soup can", "mustard bottle", "foam brick", "gelatin box",
          "pear", "strawberry", "scissors", "medium clamp"]      # (the chips can is too wide for the gripper)
-PLACES = ["station A", "station B", "station C"]
+import home
+PLACES = home.places()          # station A, B, C (+ D, the storeroom, in home mode)
 TEAM_CONTEXT = (" The drone can scout the stations; the ground robot carries one item at a time. "
                 "Wind may be blowing.")
 LAND_TEXT = ("The ground robot drives away, and the drone must land on the landing pad on top of the "
@@ -114,8 +115,8 @@ def _view(build, view):
 def start_layout(items):
     """Where every item starts, in words (from the scene's layout table)."""
     from mission_tasks import LAYOUT
-    from store_tasks import STORE_LAYOUT
-    lay = STORE_LAYOUT if all(i in STORE_ITEMS for i in items) else LAYOUT
+    from store_tasks import home_layout
+    lay = home_layout() if all(i in STORE_ITEMS for i in items) else LAYOUT
 
     def side(k):                                  # slot 0 / 1 / 2 or metres sideways (+ = the robot's left)
         u = {0: -0.15, 1: 0.0, 2: 0.15}.get(k, k) if isinstance(k, int) else k
@@ -128,7 +129,7 @@ def custom_goal(order, start):
     in exactly those places (not a generic 'fruit') and the close-up cameras look at the right tables."""
     import json
     import re
-    places = [f"on the table of {st} ({sd} side)" for st in ("station A", "station B", "station C")
+    places = [f"on the table of {st} ({sd} side)" for st in PLACES
               for sd in ("left", "middle", "right")] + ["in the tray (on the packing station)", "on the top shelf"]
     try:
         from llm import spark
@@ -149,7 +150,7 @@ def custom_goal(order, start):
             + ". Do not add, remove or invent any other object.")
     changed = {v for k, v in full.items() if v != start[k]} | {start[k] for k, v in full.items() if v != start[k]}
     extra = []
-    for st in ("station A", "station B", "station C"):
+    for st in PLACES:
         if any(c.startswith(f"on the table of {st}") for c in changed):
             here = [f"{k} ({v.split('(')[-1].rstrip(')')})" for k, v in full.items()
                     if v.startswith(f"on the table of {st}")]

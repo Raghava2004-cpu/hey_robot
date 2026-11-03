@@ -58,15 +58,26 @@ def _along_edge(body, x, y, yaw):
                                              pos[1] + y - (lo[1] + hi[1]) / 2, pos[2]], orn)
 
 
+def home_layout():
+    """The store layout; in home mode some items live in the storeroom instead (home.LAYOUT)."""
+    import home
+    return dict(STORE_LAYOUT, **home.LAYOUT) if home.active() else dict(STORE_LAYOUT)
+
+
 def store_scene(wind=(0.8, 0.5), layout=None, shelf_items=(), basket=False):
     """shelf_items = light items that start on the high shelf (only the drone can reach them)."""
-    layout = {k: v for k, v in (layout or STORE_LAYOUT).items() if k not in shelf_items}
+    import home
+    layout = {k: v for k, v in (layout or home_layout()).items() if k not in shelf_items}
 
     def build(gui=False):
         env = MobileEnv(gui=gui)
         info = {n: env.add_station(n, c, yaw) for n, (c, yaw) in STATIONS.items()}
         env.station_centers = {n: c for n, (c, yaw) in STATIONS.items()}
         env.station_yaws = {n: yaw for n, (c, yaw) in STATIONS.items()}
+        if home.active():                     # home mode: a second room, the storeroom (station D)
+            info["station D"] = env.add_station("station D", home.STORE_CENTER, home.STORE_YAW)
+            env.station_centers["station D"] = home.STORE_CENTER
+            env.station_yaws["station D"] = home.STORE_YAW
         pk = env.add_station("packing station", (0.0, -1.6), -math.pi / 2, rgba=(0.45, 0.35, 0.25, 1))
         env.station_centers["packing station"] = (0.0, -1.6)
         env.station_yaws["packing station"] = -math.pi / 2
@@ -84,7 +95,8 @@ def store_scene(wind=(0.8, 0.5), layout=None, shelf_items=(), basket=False):
         # the high shelf
         half = [0.2, 0.2, SHELF_TOP / 2]
         col = p.createCollisionShape(p.GEOM_BOX, halfExtents=half)
-        vis = p.createVisualShape(p.GEOM_BOX, halfExtents=half, rgbaColor=(0.55, 0.6, 0.7, 1))
+        vis = p.createVisualShape(p.GEOM_BOX, halfExtents=half,
+                                  rgbaColor=home.SHELF if home.active() else (0.55, 0.6, 0.7, 1))
         env.objects["top shelf"] = p.createMultiBody(0, col, vis, [SHELF_CENTER[0], SHELF_CENTER[1], SHELF_TOP / 2])
         env.static.add("top shelf")
         env.station_centers["top shelf"] = SHELF_CENTER
@@ -95,7 +107,7 @@ def store_scene(wind=(0.8, 0.5), layout=None, shelf_items=(), basket=False):
                               [SHELF_CENTER[0] - 0.08 + 0.16 * k, SHELF_CENTER[1], SHELF_TOP + 0.05])
             p.changeDynamics(body, -1, rollingFriction=0.01, spinningFriction=0.01)
             env.objects[name] = body
-        for xy in [(3.6, 2.0), (3.6, -2.0), (-3.6, 2.0), (-3.6, -2.0)]:
+        for xy in ([] if home.active() else [(3.6, 2.0), (3.6, -2.0), (-3.6, 2.0), (-3.6, -2.0)]):   # warehouse racks
             shelf = p.loadSDF("kiva_shelf/model.sdf")[0]
             p.resetBasePositionAndOrientation(shelf, [xy[0], xy[1], 0], [0, 0, 0, 1])
         env.add_landing_pad(basket=basket)
@@ -103,10 +115,13 @@ def store_scene(wind=(0.8, 0.5), layout=None, shelf_items=(), basket=False):
         env.main_view = "station"
         env.label_places()
         if gui:
-            p.addUserDebugText("TOP SHELF", [SHELF_CENTER[0], SHELF_CENTER[1], SHELF_TOP + 0.5],
+            p.addUserDebugText(home.label("top shelf").upper(), [SHELF_CENTER[0], SHELF_CENTER[1], SHELF_TOP + 0.5],
                                textColorRGB=[0.05, 0.2, 0.55], textSize=1.4)
         if gui:
-            p.resetDebugVisualizerCamera(5.0, 45, -50, [0.0, 0.0, 0.0])
+            if home.active():                 # see both rooms, the sofa and the bed
+                p.resetDebugVisualizerCamera(6.3, 35, -52, [-0.8, 0.6, 0.0])
+            else:
+                p.resetDebugVisualizerCamera(5.0, 45, -50, [0.0, 0.0, 0.0])
         env.step(240)
         env.start_pos = {n: env.get_pos(n) for n in env.objects if n not in env.static}
         return env

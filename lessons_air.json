@@ -22,5 +22,13 @@
     "lesson": "For light items on the top shelf out of arm reach, have the drone fetch them directly with drone_fly_over, drone_grab, drone_fly_over packing station, and drone_drop_into, retrying each step on failure.",
     "verified_by": "independent simulator checker",
     "created": "2026-11-01 18:27"
+  },
+  {
+    "task": "Spoken order from the warehouse operator: \"Take the strawberry strawberry with the drone and keep it in the tray.\". The strawberry are on the top shelf (1.3 m high), out of the arm's reach. Bring them into the tray at the packing station. The drone can scout the stations; the ground robot carries one item at a time. Wind may be blowing.",
+    "code": "def skill(robot):\n    done = 0\n    for _ in [0, 1]:\n        ok = False\n        for _ in [0, 1, 2]:\n            robot.drone_fly_over(\"top shelf\")\n            if not robot.drone_grab(\"strawberry\"):\n                continue\n            robot.drone_fly_over(\"packing station\")\n            for _ in [0, 1, 2]:\n                if robot.drone_drop_into(\"tray\"):\n                    ok = True\n                    break\n            if ok:\n                break\n        if ok:\n            done = done + 1\n        else:\n            break\n    return done > 0",
+    "attempts": 1,
+    "lesson": "When the order repeats the same item name, treat it as two instances and try to drone-fetch and tray-drop twice, succeeding if at least one succeeds.",
+    "verified_by": "independent simulator checker",
+    "created": "2026-11-03 17:37"
   }
 ]

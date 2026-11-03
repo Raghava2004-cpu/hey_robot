@@ -26,6 +26,8 @@ def _get_client():
 
 def imagine(task, rgb):
     """Muse Image edits the current camera view into the predicted goal scene."""
+    import home
+    task = home.to_display(task)           # --home: "station C" -> "the bedside table", "warehouse" -> "home"
     buf = io.BytesIO()
     Image.fromarray(rgb).save(buf, format="PNG")
     buf.seek(0)
