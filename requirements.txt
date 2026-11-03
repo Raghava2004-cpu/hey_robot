@@ -1,0 +1,10 @@
+pybullet
+numpy
+pillow
+requests
+openai            # only as an HTTP client for Meta's OpenAI-compatible image endpoint
+sounddevice       # microphone
+websocket-client  # Muse Voice Transcribe realtime stream
+opencv-python     # only to show / grab camera pictures (no AI)
+pyyaml  # ROS 2 bridge places file (optional: a small built-in parser is used if missing)
+pytest  # tests

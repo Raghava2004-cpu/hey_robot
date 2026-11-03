@@ -1,7 +1,7 @@
 import ast
 
 API_METHODS = {"see", "pick", "place_on", "is_holding", "put_aside", "ask",
-               "see_far", "release_point", "toss"}
+               "see_far", "release_point", "toss", "predict_landing", "last_throw"}
 SAFE_BUILTINS = {"len", "range", "print", "abs", "min", "max", "round", "str", "int",
                  "float", "bool", "list", "enumerate", "sorted", "any", "all", "isinstance"}
 MAX_ACTIONS = 30
@@ -16,6 +16,8 @@ robot.ask(question) -> short text answer from looking at the camera now, e.g. ro
 robot.see_far(phrase) -> like see(), but uses a wide camera that also sees far things (far tray, thrown ball)
 robot.release_point() -> [x, y, z] where a throw starts
 robot.toss(speed, angle_deg, heading_deg) -> True/False   (throw the held object; heading 0 = +x, 90 = +y; speed 0-6 m/s; the landing spot is measured and logged)
+robot.predict_landing(speed, angle_deg, heading_deg, drag) -> [x, y, flight_time]   (physics WORLD MODEL, a calculation not an action: integrates dv/dt = -G*z_hat - drag*(1+|v|)*v from the release point until the ball comes down to tray-floor height. drag is UNKNOWN in this world: estimate it from real throws. drag=0 means no air resistance.)
+robot.last_throw() -> {"speed", "angle", "heading", "landed": [x, y] or None}   (measured result of the most recent throw)
 Math helpers: math.sqrt, math.sin, math.cos, math.tan, math.atan2, math.radians, math.degrees, math.hypot, math.pi, and G = 9.81
 Phrases are short noun phrases, e.g. "red cube", "blue cube", "tray".
 """
@@ -26,6 +28,8 @@ class RobotAPI:
         self.env = env
         self.log = []
         self.last_phrase = None
+        self.throws = []
+        self.calc_calls = 0
 
     def _record(self, action, arg, result):
         self.log.append({"action": action, "arg": arg, "result": result})
@@ -83,18 +87,40 @@ class RobotAPI:
         ok, msg = self.env.toss(speed, angle_deg, heading_deg)
         if ok and self.last_phrase:  # measure where it landed (SAM 3.1, wide camera)
             found = self.env.perceive(self.last_phrase, "wide")
+            landed = None
             if found:
                 lx, ly, lz = found[0]["pos"]
+                landed = [round(lx, 3), round(ly, 3)]
                 d = ((lx - RELEASE[0]) ** 2 + (ly - RELEASE[1]) ** 2) ** 0.5
                 msg += f"; landed at [{lx:.3f}, {ly:.3f}, {lz:.3f}], {d:.3f} m from release point"
             else:
                 msg += "; landing spot not visible"
+            self.throws.append({"speed": speed, "angle": angle_deg,
+                                "heading": heading_deg, "landed": landed})
         self._record("toss", args, msg)
         return ok
 
+    def predict_landing(self, speed, angle_deg, heading_deg, drag):
+        from physics_model import predict_landing
+        from robot_env import RELEASE, TABLE_Z
+        self.calc_calls += 1
+        if self.calc_calls > 5000:
+            raise RuntimeError("too many world-model calculations")
+        d = float(drag)
+        if not 0 <= d <= 5:
+            raise ValueError("drag must be between 0 and 5")
+        start = getattr(self.env, "last_release", None) or RELEASE
+        x, y, t = predict_landing(start, float(speed), float(angle_deg), float(heading_deg),
+                                  d, d, TABLE_Z + 0.035)
+        return [round(x, 4), round(y, 4), round(t, 4)]
 
-def check_code(code):
+    def last_throw(self):
+        return self.throws[-1] if self.throws else None
+
+
+def check_code(code, methods=None):
     """Return None if the code is safe, otherwise a reason string."""
+    methods = methods or API_METHODS
     try:
         tree = ast.parse(code)
     except SyntaxError as e:
@@ -113,7 +139,7 @@ def check_code(code):
             if node.attr.startswith("_"):
                 return f"not allowed attribute: {node.attr}"
             if isinstance(node.value, ast.Name) and node.value.id == "robot" \
-                    and node.attr not in API_METHODS:
+                    and node.attr not in methods:
                 return f"unknown robot method: {node.attr}"
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) \
                 and node.func.id not in SAFE_BUILTINS:

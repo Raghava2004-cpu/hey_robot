@@ -1,0 +1,297 @@
+{
+  "rows": [
+    {
+      "photo": "apple_soup-can__clutter.jpg",
+      "light": "clutter",
+      "item": "apple",
+      "found": true,
+      "conf": 0.973,
+      "spark": "apple",
+      "named_right": true
+    },
+    {
+      "photo": "apple_soup-can__clutter.jpg",
+      "light": "clutter",
+      "item": "soup can",
+      "found": true,
+      "conf": 0.953,
+      "spark": "soup can",
+      "named_right": true
+    },
+    {
+      "photo": "apple_soup-can__clutter.jpg",
+      "light": "clutter",
+      "decoy": "banana",
+      "false_alarm": false
+    },
+    {
+      "photo": "apple_soup-can__clutter.jpg",
+      "light": "clutter",
+      "decoy": "scissors",
+      "false_alarm": false
+    },
+    {
+      "photo": "apple_soup-can__dim.jpg",
+      "light": "dim",
+      "item": "apple",
+      "found": true,
+      "conf": 0.973,
+      "spark": "apple",
+      "named_right": true
+    },
+    {
+      "photo": "apple_soup-can__dim.jpg",
+      "light": "dim",
+      "item": "soup can",
+      "found": true,
+      "conf": 0.926,
+      "spark": "soup can",
+      "named_right": true
+    },
+    {
+      "photo": "apple_soup-can__dim.jpg",
+      "light": "dim",
+      "decoy": "banana",
+      "false_alarm": false
+    },
+    {
+      "photo": "apple_soup-can__dim.jpg",
+      "light": "dim",
+      "decoy": "scissors",
+      "false_alarm": false
+    },
+    {
+      "photo": "apple_soup-can__normal.jpg",
+      "light": "normal",
+      "item": "apple",
+      "found": true,
+      "conf": 0.973,
+      "spark": "apple",
+      "named_right": true
+    },
+    {
+      "photo": "apple_soup-can__normal.jpg",
+      "light": "normal",
+      "item": "soup can",
+      "found": true,
+      "conf": 0.945,
+      "spark": "soup can",
+      "named_right": true
+    },
+    {
+      "photo": "apple_soup-can__normal.jpg",
+      "light": "normal",
+      "decoy": "banana",
+      "false_alarm": false
+    },
+    {
+      "photo": "apple_soup-can__normal.jpg",
+      "light": "normal",
+      "decoy": "scissors",
+      "false_alarm": false
+    },
+    {
+      "photo": "banana_scissors__clutter.jpg",
+      "light": "clutter",
+      "item": "banana",
+      "found": true,
+      "conf": 0.957,
+      "spark": "banana",
+      "named_right": true
+    },
+    {
+      "photo": "banana_scissors__clutter.jpg",
+      "light": "clutter",
+      "item": "scissors",
+      "found": true,
+      "conf": 0.984,
+      "spark": "scissors",
+      "named_right": true
+    },
+    {
+      "photo": "banana_scissors__clutter.jpg",
+      "light": "clutter",
+      "decoy": "apple",
+      "false_alarm": false
+    },
+    {
+      "photo": "banana_scissors__clutter.jpg",
+      "light": "clutter",
+      "decoy": "bottle",
+      "false_alarm": false
+    },
+    {
+      "photo": "banana_scissors__dim.jpg",
+      "light": "dim",
+      "item": "banana",
+      "found": true,
+      "conf": 0.969,
+      "spark": "banana",
+      "named_right": true
+    },
+    {
+      "photo": "banana_scissors__dim.jpg",
+      "light": "dim",
+      "item": "scissors",
+      "found": true,
+      "conf": 0.984,
+      "spark": "scissors",
+      "named_right": true
+    },
+    {
+      "photo": "banana_scissors__dim.jpg",
+      "light": "dim",
+      "decoy": "apple",
+      "false_alarm": false
+    },
+    {
+      "photo": "banana_scissors__dim.jpg",
+      "light": "dim",
+      "decoy": "bottle",
+      "false_alarm": false
+    },
+    {
+      "photo": "banana_scissors__normal.jpg",
+      "light": "normal",
+      "item": "banana",
+      "found": true,
+      "conf": 0.965,
+      "spark": "banana",
+      "named_right": true
+    },
+    {
+      "photo": "banana_scissors__normal.jpg",
+      "light": "normal",
+      "item": "scissors",
+      "found": true,
+      "conf": 0.988,
+      "spark": "scissors",
+      "named_right": true
+    },
+    {
+      "photo": "banana_scissors__normal.jpg",
+      "light": "normal",
+      "decoy": "apple",
+      "false_alarm": false
+    },
+    {
+      "photo": "banana_scissors__normal.jpg",
+      "light": "normal",
+      "decoy": "bottle",
+      "false_alarm": false
+    },
+    {
+      "photo": "mug_bottle__clutter.jpg",
+      "light": "clutter",
+      "item": "mug",
+      "found": true,
+      "conf": 0.945,
+      "spark": "mug",
+      "named_right": true
+    },
+    {
+      "photo": "mug_bottle__clutter.jpg",
+      "light": "clutter",
+      "item": "bottle",
+      "found": true,
+      "conf": 0.965,
+      "spark": "bottle",
+      "named_right": true
+    },
+    {
+      "photo": "mug_bottle__clutter.jpg",
+      "light": "clutter",
+      "decoy": "banana",
+      "false_alarm": false
+    },
+    {
+      "photo": "mug_bottle__clutter.jpg",
+      "light": "clutter",
+      "decoy": "scissors",
+      "false_alarm": false
+    },
+    {
+      "photo": "mug_bottle__dim.jpg",
+      "light": "dim",
+      "item": "mug",
+      "found": true,
+      "conf": 0.945,
+      "spark": "mug",
+      "named_right": true
+    },
+    {
+      "photo": "mug_bottle__dim.jpg",
+      "light": "dim",
+      "item": "bottle",
+      "found": true,
+      "conf": 0.957,
+      "spark": "bottle",
+      "named_right": true
+    },
+    {
+      "photo": "mug_bottle__dim.jpg",
+      "light": "dim",
+      "decoy": "banana",
+      "false_alarm": false
+    },
+    {
+      "photo": "mug_bottle__dim.jpg",
+      "light": "dim",
+      "decoy": "scissors",
+      "false_alarm": false
+    },
+    {
+      "photo": "mug_bottle__normal.jpg",
+      "light": "normal",
+      "item": "mug",
+      "found": true,
+      "conf": 0.953,
+      "spark": "mug",
+      "named_right": true
+    },
+    {
+      "photo": "mug_bottle__normal.jpg",
+      "light": "normal",
+      "item": "bottle",
+      "found": true,
+      "conf": 0.965,
+      "spark": "bottle",
+      "named_right": true
+    },
+    {
+      "photo": "mug_bottle__normal.jpg",
+      "light": "normal",
+      "decoy": "banana",
+      "false_alarm": false
+    },
+    {
+      "photo": "mug_bottle__normal.jpg",
+      "light": "normal",
+      "decoy": "scissors",
+      "false_alarm": false
+    }
+  ],
+  "summary": {
+    "clutter": {
+      "items": 6,
+      "found": 6,
+      "named_right": 6,
+      "decoys": 6,
+      "false_alarms": 0
+    },
+    "dim": {
+      "items": 6,
+      "found": 6,
+      "named_right": 6,
+      "decoys": 6,
+      "false_alarms": 0
+    },
+    "normal": {
+      "items": 6,
+      "found": 6,
+      "named_right": 6,
+      "decoys": 6,
+      "false_alarms": 0
+    }
+  }
+}

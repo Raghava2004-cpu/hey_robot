@@ -60,8 +60,13 @@ def spark_compare(task, imagined, real):
             "camera view after the robot acted. Ignore the robot arm's pose, small position "
             "offsets, image style and resolution, and objects the task does not mention (they may "
             "end up in different places). Judge only whether the real scene achieves "
-            "the task the way the goal shows. Reply with MATCH or MISMATCH on the first line, "
-            "then one short reason."},
+            "the task the way the goal shows. An object resting on top of a robot or platform counts "
+            "as landed or placed on it, even if it looks raised. The imagined goal is a drawing: its objects "
+            "may have a different color, size or style than the real ones, so count an object as present when "
+            "an object of the same kind is on the same table or in the same container (its exact spot there does not "
+            "matter). Judge only what this camera can see: a "
+            "place from the task that is outside the picture is not missing. Reply with MATCH or MISMATCH on "
+            "the first line, then one short reason."},
         {"role": "user", "content": [
             {"type": "text", "text": f"Task: {task}"},
             {"type": "image_url", "image_url": {"url": _to_data_url(imagined)}},

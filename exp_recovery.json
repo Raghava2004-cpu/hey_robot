@@ -1,0 +1,542 @@
+[
+  {
+    "seed": 0,
+    "naive": {
+      "items": [
+        "foam brick",
+        "gelatin box"
+      ],
+      "ok": false,
+      "msg": "in tray: ['gelatin box'] of ['foam brick', 'gelatin box']",
+      "slips": 1,
+      "moved": [],
+      "actions": 9
+    },
+    "verified": {
+      "items": [
+        "foam brick",
+        "gelatin box"
+      ],
+      "ok": true,
+      "msg": "in tray: ['foam brick', 'gelatin box'] of ['foam brick', 'gelatin box']",
+      "slips": 1,
+      "moved": [],
+      "actions": 13
+    }
+  },
+  {
+    "seed": 1,
+    "naive": {
+      "items": [
+        "soup can",
+        "banana"
+      ],
+      "ok": false,
+      "msg": "in tray: nothing of ['soup can', 'banana']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the soup can from station C to station A"
+      ],
+      "actions": 7
+    },
+    "verified": {
+      "items": [
+        "soup can",
+        "banana"
+      ],
+      "ok": true,
+      "msg": "in tray: ['soup can', 'banana'] of ['soup can', 'banana']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the soup can from station C to station A"
+      ],
+      "actions": 16
+    }
+  },
+  {
+    "seed": 2,
+    "naive": {
+      "items": [
+        "banana",
+        "gelatin box"
+      ],
+      "ok": false,
+      "msg": "in tray: ['gelatin box'] of ['banana', 'gelatin box']",
+      "slips": 1,
+      "moved": [],
+      "actions": 9
+    },
+    "verified": {
+      "items": [
+        "banana",
+        "gelatin box"
+      ],
+      "ok": true,
+      "msg": "in tray: ['banana', 'gelatin box'] of ['banana', 'gelatin box']",
+      "slips": 2,
+      "moved": [],
+      "actions": 15
+    }
+  },
+  {
+    "seed": 3,
+    "naive": {
+      "items": [
+        "soup can",
+        "gelatin box"
+      ],
+      "ok": false,
+      "msg": "in tray: ['gelatin box'] of ['soup can', 'gelatin box']",
+      "slips": 0,
+      "moved": [
+        "a worker moved the soup can from station C to station A"
+      ],
+      "actions": 9
+    },
+    "verified": {
+      "items": [
+        "soup can",
+        "gelatin box"
+      ],
+      "ok": true,
+      "msg": "in tray: ['soup can', 'gelatin box'] of ['soup can', 'gelatin box']",
+      "slips": 0,
+      "moved": [
+        "a worker moved the soup can from station C to station A"
+      ],
+      "actions": 14
+    }
+  },
+  {
+    "seed": 4,
+    "naive": {
+      "items": [
+        "soup can",
+        "mustard bottle"
+      ],
+      "ok": true,
+      "msg": "in tray: ['soup can', 'mustard bottle'] of ['soup can', 'mustard bottle']",
+      "slips": 0,
+      "moved": [],
+      "actions": 11
+    },
+    "verified": {
+      "items": [
+        "soup can",
+        "mustard bottle"
+      ],
+      "ok": true,
+      "msg": "in tray: ['soup can', 'mustard bottle'] of ['soup can', 'mustard bottle']",
+      "slips": 0,
+      "moved": [],
+      "actions": 11
+    }
+  },
+  {
+    "seed": 5,
+    "naive": {
+      "items": [
+        "gelatin box",
+        "mustard bottle"
+      ],
+      "ok": false,
+      "msg": "in tray: ['gelatin box'] of ['gelatin box', 'mustard bottle']",
+      "slips": 0,
+      "moved": [
+        "a worker moved the mustard bottle from station C to station B"
+      ],
+      "actions": 9
+    },
+    "verified": {
+      "items": [
+        "gelatin box",
+        "mustard bottle"
+      ],
+      "ok": false,
+      "msg": "in tray: ['gelatin box'] of ['gelatin box', 'mustard bottle']",
+      "slips": 0,
+      "moved": [
+        "a worker moved the mustard bottle from station C to station B"
+      ],
+      "actions": 15
+    }
+  },
+  {
+    "seed": 6,
+    "naive": {
+      "items": [
+        "gelatin box",
+        "banana"
+      ],
+      "ok": false,
+      "msg": "in tray: ['gelatin box'] of ['gelatin box', 'banana']",
+      "slips": 1,
+      "moved": [],
+      "actions": 9
+    },
+    "verified": {
+      "items": [
+        "gelatin box",
+        "banana"
+      ],
+      "ok": true,
+      "msg": "in tray: ['gelatin box', 'banana'] of ['gelatin box', 'banana']",
+      "slips": 1,
+      "moved": [],
+      "actions": 13
+    }
+  },
+  {
+    "seed": 7,
+    "naive": {
+      "items": [
+        "mustard bottle",
+        "soup can"
+      ],
+      "ok": false,
+      "msg": "in tray: nothing of ['mustard bottle', 'soup can']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the soup can from station C to station A"
+      ],
+      "actions": 7
+    },
+    "verified": {
+      "items": [
+        "mustard bottle",
+        "soup can"
+      ],
+      "ok": true,
+      "msg": "in tray: ['mustard bottle', 'soup can'] of ['mustard bottle', 'soup can']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the soup can from station C to station A"
+      ],
+      "actions": 16
+    }
+  },
+  {
+    "seed": 8,
+    "naive": {
+      "items": [
+        "soup can",
+        "mustard bottle"
+      ],
+      "ok": false,
+      "msg": "in tray: ['mustard bottle'] of ['soup can', 'mustard bottle']",
+      "slips": 1,
+      "moved": [],
+      "actions": 9
+    },
+    "verified": {
+      "items": [
+        "soup can",
+        "mustard bottle"
+      ],
+      "ok": true,
+      "msg": "in tray: ['soup can', 'mustard bottle'] of ['soup can', 'mustard bottle']",
+      "slips": 1,
+      "moved": [],
+      "actions": 13
+    }
+  },
+  {
+    "seed": 9,
+    "naive": {
+      "items": [
+        "foam brick",
+        "mustard bottle"
+      ],
+      "ok": false,
+      "msg": "in tray: nothing of ['foam brick', 'mustard bottle']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the mustard bottle from station C to station B"
+      ],
+      "actions": 7
+    },
+    "verified": {
+      "items": [
+        "foam brick",
+        "mustard bottle"
+      ],
+      "ok": false,
+      "msg": "in tray: ['foam brick'] of ['foam brick', 'mustard bottle']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the mustard bottle from station C to station B"
+      ],
+      "actions": 17
+    }
+  },
+  {
+    "seed": 10,
+    "naive": {
+      "items": [
+        "gelatin box",
+        "banana"
+      ],
+      "ok": true,
+      "msg": "in tray: ['gelatin box', 'banana'] of ['gelatin box', 'banana']",
+      "slips": 0,
+      "moved": [],
+      "actions": 11
+    },
+    "verified": {
+      "items": [
+        "gelatin box",
+        "banana"
+      ],
+      "ok": true,
+      "msg": "in tray: ['gelatin box', 'banana'] of ['gelatin box', 'banana']",
+      "slips": 0,
+      "moved": [],
+      "actions": 11
+    }
+  },
+  {
+    "seed": 11,
+    "naive": {
+      "items": [
+        "foam brick",
+        "gelatin box"
+      ],
+      "ok": false,
+      "msg": "in tray: ['foam brick'] of ['foam brick', 'gelatin box']",
+      "slips": 0,
+      "moved": [
+        "a worker moved the gelatin box from station A to station C"
+      ],
+      "actions": 9
+    },
+    "verified": {
+      "items": [
+        "foam brick",
+        "gelatin box"
+      ],
+      "ok": true,
+      "msg": "in tray: ['foam brick', 'gelatin box'] of ['foam brick', 'gelatin box']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the gelatin box from station A to station C"
+      ],
+      "actions": 18
+    }
+  },
+  {
+    "seed": 12,
+    "naive": {
+      "items": [
+        "foam brick",
+        "mustard bottle"
+      ],
+      "ok": true,
+      "msg": "in tray: ['foam brick', 'mustard bottle'] of ['foam brick', 'mustard bottle']",
+      "slips": 0,
+      "moved": [],
+      "actions": 11
+    },
+    "verified": {
+      "items": [
+        "foam brick",
+        "mustard bottle"
+      ],
+      "ok": true,
+      "msg": "in tray: ['foam brick', 'mustard bottle'] of ['foam brick', 'mustard bottle']",
+      "slips": 0,
+      "moved": [],
+      "actions": 11
+    }
+  },
+  {
+    "seed": 13,
+    "naive": {
+      "items": [
+        "mustard bottle",
+        "gelatin box"
+      ],
+      "ok": false,
+      "msg": "in tray: nothing of ['mustard bottle', 'gelatin box']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the gelatin box from station A to station C"
+      ],
+      "actions": 7
+    },
+    "verified": {
+      "items": [
+        "mustard bottle",
+        "gelatin box"
+      ],
+      "ok": true,
+      "msg": "in tray: ['mustard bottle', 'gelatin box'] of ['mustard bottle', 'gelatin box']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the gelatin box from station A to station C"
+      ],
+      "actions": 18
+    }
+  },
+  {
+    "seed": 14,
+    "naive": {
+      "items": [
+        "banana",
+        "soup can"
+      ],
+      "ok": false,
+      "msg": "in tray: nothing of ['banana', 'soup can']",
+      "slips": 2,
+      "moved": [],
+      "actions": 7
+    },
+    "verified": {
+      "items": [
+        "banana",
+        "soup can"
+      ],
+      "ok": true,
+      "msg": "in tray: ['banana', 'soup can'] of ['banana', 'soup can']",
+      "slips": 4,
+      "moved": [],
+      "actions": 19
+    }
+  },
+  {
+    "seed": 15,
+    "naive": {
+      "items": [
+        "soup can",
+        "banana"
+      ],
+      "ok": false,
+      "msg": "in tray: nothing of ['soup can', 'banana']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the soup can from station C to station A"
+      ],
+      "actions": 7
+    },
+    "verified": {
+      "items": [
+        "soup can",
+        "banana"
+      ],
+      "ok": true,
+      "msg": "in tray: ['soup can', 'banana'] of ['soup can', 'banana']",
+      "slips": 3,
+      "moved": [
+        "a worker moved the soup can from station C to station A"
+      ],
+      "actions": 22
+    }
+  },
+  {
+    "seed": 16,
+    "naive": {
+      "items": [
+        "mustard bottle",
+        "foam brick"
+      ],
+      "ok": true,
+      "msg": "in tray: ['mustard bottle', 'foam brick'] of ['mustard bottle', 'foam brick']",
+      "slips": 0,
+      "moved": [],
+      "actions": 11
+    },
+    "verified": {
+      "items": [
+        "mustard bottle",
+        "foam brick"
+      ],
+      "ok": true,
+      "msg": "in tray: ['mustard bottle', 'foam brick'] of ['mustard bottle', 'foam brick']",
+      "slips": 0,
+      "moved": [],
+      "actions": 11
+    }
+  },
+  {
+    "seed": 17,
+    "naive": {
+      "items": [
+        "gelatin box",
+        "foam brick"
+      ],
+      "ok": false,
+      "msg": "in tray: nothing of ['gelatin box', 'foam brick']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the foam brick from station A to station C"
+      ],
+      "actions": 7
+    },
+    "verified": {
+      "items": [
+        "gelatin box",
+        "foam brick"
+      ],
+      "ok": false,
+      "msg": "in tray: ['gelatin box'] of ['gelatin box', 'foam brick']",
+      "slips": 3,
+      "moved": [
+        "a worker moved the foam brick from station A to station C"
+      ],
+      "actions": 22
+    }
+  },
+  {
+    "seed": 18,
+    "naive": {
+      "items": [
+        "soup can",
+        "banana"
+      ],
+      "ok": false,
+      "msg": "in tray: ['soup can'] of ['soup can', 'banana']",
+      "slips": 1,
+      "moved": [],
+      "actions": 9
+    },
+    "verified": {
+      "items": [
+        "soup can",
+        "banana"
+      ],
+      "ok": false,
+      "msg": "in tray: ['soup can'] of ['soup can', 'banana']",
+      "slips": 2,
+      "moved": [],
+      "actions": 18
+    }
+  },
+  {
+    "seed": 19,
+    "naive": {
+      "items": [
+        "banana",
+        "gelatin box"
+      ],
+      "ok": false,
+      "msg": "in tray: ['gelatin box'] of ['banana', 'gelatin box']",
+      "slips": 0,
+      "moved": [
+        "a worker moved the banana from station B to station A"
+      ],
+      "actions": 9
+    },
+    "verified": {
+      "items": [
+        "banana",
+        "gelatin box"
+      ],
+      "ok": true,
+      "msg": "in tray: ['banana', 'gelatin box'] of ['banana', 'gelatin box']",
+      "slips": 1,
+      "moved": [
+        "a worker moved the banana from station B to station A"
+      ],
+      "actions": 16
+    }
+  }
+]

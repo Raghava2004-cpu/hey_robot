@@ -1,3 +1,16 @@
+# never upload secrets
+.env
+*.key
+# local environment and outputs
 venv/
 __pycache__/
-.env
+.pytest_cache/
+pip-*/
+runs/
+*.wav
+mission_map.json
+# outside 3D models: cloned by the Run it steps (they are their own git repos)
+third_party/
+# old zips and local debug files
+*.zip
+t_*.py

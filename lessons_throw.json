@@ -1,0 +1,10 @@
+[
+  {
+    "task": "Spoken order from the warehouse operator: \"Through a tennis ball into the blue bin.\". Throw a tennis ball into the blue bin. The tennis balls are on the ball rack table (there are 3). Pick one, go to the throw line, and throw it into the bin. The air slows the ball by an unknown amount, so plain projectile math may miss: learn from each throw.",
+    "code": "def skill(robot):\n    ang = 35\n    k = 1.0\n    tz = 0.15\n    for _ in range(3):\n        if not robot.is_holding():\n            if not robot.go_to(\"ball rack\"):\n                return False\n            if not robot.pick(\"tennis ball\"):\n                return False\n            if not robot.go_to(\"throw line\"):\n                return False\n        rp = robot.release_point()\n        bp = robot.see(\"blue bin\")\n        if bp is None or rp is None:\n            return False\n        Dt = math.hypot(bp[0] - rp[0], bp[1] - rp[1])\n        want = Dt / k if k > 0.1 else Dt\n        best = 3.0\n        bd = 999\n        for i in range(10, 61):\n            s = i / 10.0\n            p = robot.predict_distance(s, ang, tz)\n            d = abs(p - want)\n            if d < bd:\n                bd = d\n                best = s\n        r = robot.throw(best, ang)\n        if r is None or r is False:\n            return False\n        if r.get(\"in_bin\"):\n            return True\n        p = robot.predict_distance(best, ang, tz)\n        if p is not None and p > 0.05:\n            k = r[\"distance\"] / p\n            if k < 0.3:\n                k = 0.3\n            if k > 1.0:\n                k = 1.0\n    t = robot.throws()\n    for x in t:\n        if x.get(\"in_bin\"):\n            return True\n    return False",
+    "attempts": 1,
+    "lesson": "Compensate for unknown air drag by tracking k equals actual distance divided by predicted distance and aiming the physics model at target distance divided by k",
+    "verified_by": "independent simulator checker",
+    "created": "2026-11-01 13:50"
+  }
+]

@@ -1,0 +1,542 @@
+[
+  {
+    "seed": 0,
+    "wind": [
+      -0.497,
+      -0.38
+    ],
+    "gust": 0.0,
+    "wheel": 1.35,
+    "open_loop": {
+      "landed": true,
+      "cm": 16.4,
+      "pad_speed": 0.272,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 0.4,
+      "pad_speed": 0.272,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.6,
+      "pad_speed": 0.272,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 1,
+    "wind": [
+      0.732,
+      0.072
+    ],
+    "gust": 0.5,
+    "wheel": 0.9,
+    "open_loop": {
+      "landed": true,
+      "cm": 17.0,
+      "pad_speed": 0.16,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 7.6,
+      "pad_speed": 0.16,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.5,
+      "pad_speed": 0.16,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 2,
+    "wind": [
+      -0.285,
+      0.357
+    ],
+    "gust": 1.0,
+    "wheel": 1.8,
+    "open_loop": {
+      "landed": false,
+      "cm": 30.6,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": false,
+      "cm": 60.6,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.3,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 3,
+    "wind": [
+      -0.009,
+      0.225
+    ],
+    "gust": 1.5,
+    "wheel": 1.39,
+    "open_loop": {
+      "landed": false,
+      "cm": 80.0,
+      "pad_speed": 0.194,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": false,
+      "cm": 71.5,
+      "pad_speed": 0.194,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.7,
+      "pad_speed": 0.194,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 4,
+    "wind": [
+      0.001,
+      0.001
+    ],
+    "gust": 0.0,
+    "wheel": 0.82,
+    "open_loop": {
+      "landed": true,
+      "cm": 9.4,
+      "pad_speed": 0.146,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 0.4,
+      "pad_speed": 0.146,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.3,
+      "pad_speed": 0.146,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 5,
+    "wind": [
+      0.089,
+      -0.042
+    ],
+    "gust": 0.5,
+    "wheel": 1.06,
+    "open_loop": {
+      "landed": true,
+      "cm": 16.7,
+      "pad_speed": 0.189,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 11.3,
+      "pad_speed": 0.189,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.2,
+      "pad_speed": 0.189,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 6,
+    "wind": [
+      -0.326,
+      -0.239
+    ],
+    "gust": 1.0,
+    "wheel": 1.08,
+    "open_loop": {
+      "landed": false,
+      "cm": 34.1,
+      "pad_speed": 0.193,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 12.3,
+      "pad_speed": 0.193,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.2,
+      "pad_speed": 0.193,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 7,
+    "wind": [
+      0.034,
+      -0.078
+    ],
+    "gust": 1.5,
+    "wheel": 1.63,
+    "open_loop": {
+      "landed": false,
+      "cm": 48.0,
+      "pad_speed": 0.262,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": false,
+      "cm": 90.2,
+      "pad_speed": 0.262,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 2.9,
+      "pad_speed": 0.262,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 8,
+    "wind": [
+      0.077,
+      -0.185
+    ],
+    "gust": 0.0,
+    "wheel": 0.95,
+    "open_loop": {
+      "landed": true,
+      "cm": 10.3,
+      "pad_speed": 0.17,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 0.5,
+      "pad_speed": 0.17,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.5,
+      "pad_speed": 0.17,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 9,
+    "wind": [
+      -0.032,
+      0.06
+    ],
+    "gust": 0.5,
+    "wheel": 0.68,
+    "open_loop": {
+      "landed": true,
+      "cm": 14.7,
+      "pad_speed": 0.121,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 9.1,
+      "pad_speed": 0.121,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.4,
+      "pad_speed": 0.121,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 10,
+    "wind": [
+      -0.111,
+      -0.025
+    ],
+    "gust": 1.0,
+    "wheel": 2.07,
+    "open_loop": {
+      "landed": false,
+      "cm": 109.6,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": false,
+      "cm": 42.5,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.8,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 11,
+    "wind": [
+      -0.314,
+      -0.132
+    ],
+    "gust": 1.5,
+    "wheel": 0.94,
+    "open_loop": {
+      "landed": false,
+      "cm": 24.8,
+      "pad_speed": 0.168,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": false,
+      "cm": 22.6,
+      "pad_speed": 0.168,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.6,
+      "pad_speed": 0.168,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 12,
+    "wind": [
+      0.07,
+      -0.361
+    ],
+    "gust": 0.0,
+    "wheel": 0.98,
+    "open_loop": {
+      "landed": true,
+      "cm": 10.2,
+      "pad_speed": 0.175,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 0.4,
+      "pad_speed": 0.175,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.3,
+      "pad_speed": 0.175,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 13,
+    "wind": [
+      0.838,
+      0.454
+    ],
+    "gust": 0.5,
+    "wheel": 1.68,
+    "open_loop": {
+      "landed": false,
+      "cm": 23.2,
+      "pad_speed": 0.304,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 7.7,
+      "pad_speed": 0.304,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.3,
+      "pad_speed": 0.304,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 14,
+    "wind": [
+      -0.449,
+      -0.268
+    ],
+    "gust": 1.0,
+    "wheel": 2.04,
+    "open_loop": {
+      "landed": true,
+      "cm": 20.2,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": false,
+      "cm": 53.1,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.4,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 15,
+    "wind": [
+      -0.338,
+      -0.269
+    ],
+    "gust": 1.5,
+    "wheel": 1.63,
+    "open_loop": {
+      "landed": false,
+      "cm": 119.3,
+      "pad_speed": 0.231,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": false,
+      "cm": 74.7,
+      "pad_speed": 0.231,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 13.5,
+      "pad_speed": 0.231,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 16,
+    "wind": [
+      -0.256,
+      0.096
+    ],
+    "gust": 0.0,
+    "wheel": 1.17,
+    "open_loop": {
+      "landed": true,
+      "cm": 12.8,
+      "pad_speed": 0.217,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 0.4,
+      "pad_speed": 0.217,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.7,
+      "pad_speed": 0.217,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 17,
+    "wind": [
+      0.478,
+      -0.993
+    ],
+    "gust": 0.5,
+    "wheel": 2.16,
+    "open_loop": {
+      "landed": true,
+      "cm": 21.1,
+      "pad_speed": 0.382,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 14.4,
+      "pad_speed": 0.382,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.8,
+      "pad_speed": 0.382,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 18,
+    "wind": [
+      -0.684,
+      0.199
+    ],
+    "gust": 1.0,
+    "wheel": 1.99,
+    "open_loop": {
+      "landed": false,
+      "cm": 74.4,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 19.3,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.6,
+      "pad_speed": 0.2,
+      "sam_calls": 0
+    }
+  },
+  {
+    "seed": 19,
+    "wind": [
+      -0.207,
+      0.158
+    ],
+    "gust": 1.5,
+    "wheel": 1.35,
+    "open_loop": {
+      "landed": false,
+      "cm": 26.2,
+      "pad_speed": 0.259,
+      "sam_calls": 0
+    },
+    "tracking": {
+      "landed": true,
+      "cm": 13.0,
+      "pad_speed": 0.259,
+      "sam_calls": 0
+    },
+    "rl": {
+      "landed": true,
+      "cm": 0.7,
+      "pad_speed": 0.259,
+      "sam_calls": 0
+    }
+  }
+]

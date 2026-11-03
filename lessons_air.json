@@ -1,0 +1,26 @@
+[
+  {
+    "task": "Spoken order from the warehouse operator: \"rone get the get the strawberry and the beer from the top shelf.\". The strawberry and the pear are on the top shelf (1.3 m high), out of the arm's reach. Bring them into the tray at the packing station. The drone can scout the stations; the ground robot carries one item at a time. Wind may be blowing.",
+    "code": "def skill(robot):\n    tray = \"tray\"\n    for item in [\"strawberry\", \"pear\"]:\n        done = False\n        for _ in [0, 1, 2]:\n            robot.drone_fly_over(\"top shelf\")\n            if not robot.drone_grab(item):\n                continue\n            robot.drone_fly_over(\"packing station\")\n            for _ in [0, 1, 2]:\n                if robot.drone_drop_into(tray):\n                    done = True\n                    break\n            if done:\n                break\n        if not done:\n            return False\n    robot.drone_fly_over(\"top shelf\")\n    if robot.drone_grab(\"beer\"):\n        robot.drone_fly_over(\"packing station\")\n        robot.drone_drop_into(tray)\n    return True",
+    "attempts": 1,
+    "lesson": "Cross-check spoken item names against what the drone actually sees because transcription can swap similar-sounding words like pear and beer.",
+    "verified_by": "independent simulator checker",
+    "created": "2026-11-01 16:53"
+  },
+  {
+    "task": "Spoken order from the warehouse operator: \"rone get the strawberry and the pear from the top shelf.\". The strawberry and the pear are on the top shelf (1.3 m high), out of the arm's reach. Bring them into the tray at the packing station. The drone can scout the stations; the ground robot carries one item at a time. Wind may be blowing.",
+    "code": "def skill(robot):\n    seen = robot.drone_scan(\"top shelf\", [\"strawberry\", \"pear\", \"beer\"])\n    targets = []\n    if \"strawberry\" in seen:\n        targets.append(\"strawberry\")\n    if \"pear\" in seen:\n        targets.append(\"pear\")\n    if \"beer\" in seen and \"pear\" not in seen:\n        targets.append(\"beer\")\n    if not targets:\n        targets = [\"strawberry\", \"pear\"]\n    for item in targets:\n        ok = False\n        for _ in [0, 1, 2]:\n            robot.drone_fly_over(\"top shelf\")\n            if not robot.drone_grab(item):\n                continue\n            robot.drone_fly_over(\"packing station\")\n            for _ in [0, 1, 2]:\n                if robot.drone_drop_into(\"tray\"):\n                    ok = True\n                    break\n            if ok:\n                break\n        if not ok:\n            return False\n    return True",
+    "attempts": 1,
+    "lesson": "Cross-check spoken item names against the drone's scan because transcription can swap similar-sounding words like pear and beer.",
+    "verified_by": "independent simulator checker",
+    "created": "2026-11-01 16:57"
+  },
+  {
+    "task": "Spoken order from the warehouse operator: \"uh get the get the strawberry from the shelf\". The strawberry are on the top shelf (1.3 m high), out of the arm's reach. Bring them into the tray at the packing station. The drone can scout the stations; the ground robot carries one item at a time. Wind may be blowing.",
+    "code": "def skill(robot):\n    for _ in [0, 1, 2]:\n        robot.drone_fly_over(\"top shelf\")\n        if not robot.drone_grab(\"strawberry\"):\n            continue\n        robot.drone_fly_over(\"packing station\")\n        for _ in [0, 1, 2]:\n            if robot.drone_drop_into(\"tray\"):\n                return True\n    return False",
+    "attempts": 1,
+    "lesson": "For light items on the top shelf out of arm reach, have the drone fetch them directly with drone_fly_over, drone_grab, drone_fly_over packing station, and drone_drop_into, retrying each step on failure.",
+    "verified_by": "independent simulator checker",
+    "created": "2026-11-01 18:27"
+  }
+]

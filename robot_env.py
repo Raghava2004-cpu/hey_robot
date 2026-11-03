@@ -272,10 +272,15 @@ class RobotEnv:
             p.setCollisionFilterPair(self.robot, body, link, -1, 0)
         p.removeConstraint(c)
         self.held = None
+        self.last_release = self.get_pos(name)
         th, ps = np.radians(angle_deg), np.radians(heading_deg)
         v = [speed * np.cos(th) * np.cos(ps), speed * np.cos(th) * np.sin(ps), speed * np.sin(th)]
         p.resetBaseVelocity(body, linearVelocity=v)
-        self.gripper(True)
-        self.step(600)  # flight + landing
+        for j in (9, 10):  # open the fingers without pausing the flight
+            p.setJointMotorControl2(self.robot, j, p.POSITION_CONTROL, 0.04, force=20)
+        self.last_flight = []
+        for _ in range(660):  # flight + landing, recorded
+            self.step()
+            self.last_flight.append(self.get_pos(name))
         self.go_home()
-        return True, f"tossed {name}: {speed:.2f} m/s, {angle_deg:.1f} deg, heading {heading_deg:.1f} deg"    
+        return True, f"tossed {name}: {speed:.2f} m/s, {angle_deg:.1f} deg, heading {heading_deg:.1f} deg"

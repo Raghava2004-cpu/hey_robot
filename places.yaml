@@ -1,0 +1,9 @@
+# Named park poses for the ground robot (map frame, metres + radians).
+# ROS2TeamAPI.go_to() reads this file and sends the pose to Nav2.
+# These match the simulator: each table center minus 0.85 m along the table's direction
+# (mission_tasks.STATIONS + mobile_env.add_station). On a real robot, measure your own.
+places:
+  station A: {x: 0.75, y: 0.0, yaw: 0.0}
+  station B: {x: 0.0, y: 0.75, yaw: 1.5708}
+  station C: {x: -0.75, y: 0.0, yaw: 3.1416}
+  packing station: {x: 0.0, y: -0.75, yaw: -1.5708}
