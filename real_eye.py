@@ -1,4 +1,4 @@
-"""Hey Robot's eyes on the REAL world: the same SAM 3.1 + Muse Spark pipeline the robots use, on real cameras.
+"""Hey Robot's eyes on the REAL world: the same SAM 3.1 + Muse Spark pipeline the robots use, on real photos.
 
 1) Phone photos -> a results table (real-camera evidence)
    Put photos in a folder named like  <items>__<light>.jpg   (items joined by "_", spaces as "-"):
@@ -8,12 +8,7 @@
    is also asked for 2 things that are NOT in the photo (a false alarm counts against it).
    Output: runs/real/*.png (labelled), runs/real/grid.png, runs/real/real_eye.json
 
-2) Live webcam + voice
-   python real_eye.py --webcam                 # press Enter, then SPEAK a question (6 s)
-   python real_eye.py --webcam --type          # press Enter, then TYPE a question
-   "Where is the banana?"  "How many fruits are on the desk?"  "Is there anything to cut paper with?"
-   Muse Spark decides what to look for -> SAM 3.1 finds it (numbered boxes) -> Spark answers from the boxed
-   picture -> the answer is spoken. (OpenCV only grabs and shows the webcam picture.)
+(The live webcam is used in the command center: python command_center.py --loop --home --webcam)
 """
 import json
 import os
@@ -125,89 +120,9 @@ def run_photos(folder):
         print(f"\nPictures: {OUT}/  (grid.png = all photos)")
 
 
-# ---------------------------------------------------------------- 2) live webcam + voice
-def what_to_look_for(question):
-    from llm import spark
-    msg = [{"role": "system", "content": "Reply with object names only, comma separated, short noun phrases."},
-           {"role": "user", "content": f"A person asks a camera robot: \"{question}\". Which objects must the "
-                                       "camera look for to answer? If the question names a category (fruit, "
-                                       "tools, something to cut with), list the common objects of that category "
-                                       "(at most 6)."}]
-    text, _ = spark(msg, effort="low")
-    return [w.strip().lower().strip(".") for w in text.split(",") if w.strip()][:6]
-
-
-def answer_live(rgb, question):
-    import muse_eye
-    from llm import spark_vision
-    names = what_to_look_for(question)
-    found = find_all(rgb, names)
-    dets, n = [], 0
-    for name, boxes in found.items():
-        for b in sorted(boxes, key=lambda b: -(b.get("conf") or 0))[:4]:
-            n += 1
-            dets.append(dict(b, label=f"{n}: {name}"))
-    pic = muse_eye.annotate(rgb, dets, f"LIVE | SAM 3.1 looked for: {', '.join(names)}", chosen=-1)
-    q = (f"Question from a person: \"{question}\". The picture is a live camera view; SAM 3.1 drew numbered "
-         "boxes around the objects it found. Answer in ONE short spoken sentence, using the boxes and what you "
-         "see (say left, right, front, back as seen in the picture). If nothing matches, say so.")
-    try:
-        ans = str(spark_vision(q, np.array(pic))).strip()
-    except Exception as e:
-        ans = f"Sorry, I could not answer ({str(e)[:40]})."
-    return ans, pic, names, len(dets)
-
-
-def run_webcam(typed=False):
-    import cv2
-    from speech import say
-    os.makedirs(OUT, exist_ok=True)
-    cam = cv2.VideoCapture(0)
-    if not cam.isOpened():
-        print("No webcam found.")
-        return
-    print("Webcam on. Press Enter to ask (q + Enter to quit).")
-    k = 0
-    while True:
-        ok, frame = cam.read()
-        if ok:
-            cv2.imshow("Hey Robot real eye (webcam)", frame)
-            cv2.waitKey(1)
-        cmd = input("\nPress Enter to ask, or q to quit: ").strip().lower()
-        if cmd == "q":
-            break
-        for _ in range(5):                      # fresh frame (the camera buffers old ones)
-            ok, frame = cam.read()
-        if not ok:
-            print("Could not read the webcam.")
-            continue
-        rgb = frame[:, :, ::-1].copy()
-        if typed:
-            question = input("Type your question: ").strip()
-        else:
-            from voice import listen
-            question = listen(6).strip()
-        print(f'🗣️  HEARD: "{question}"')
-        if not question:
-            continue
-        ans, pic, names, nboxes = answer_live(rgb, question)
-        k += 1
-        path = os.path.join(OUT, f"live_{k:02d}.png")
-        pic.save(path)
-        print(f"🔍 SAM 3.1 looked for {names} -> {nboxes} boxes   ({path})")
-        print(f"🤖 ANSWER: {ans}")
-        cv2.imshow("Hey Robot real eye (webcam)", np.array(pic)[:, :, ::-1])
-        cv2.waitKey(1)
-        say(ans, wait=True)
-    cam.release()
-    cv2.destroyAllWindows()
-
-
 if __name__ == "__main__":
     a = sys.argv[1:]
     if "--photos" in a:
         run_photos(a[a.index("--photos") + 1])
-    elif "--webcam" in a:
-        run_webcam(typed="--type" in a)
     else:
         print(__doc__)

@@ -38,7 +38,14 @@ STORE_CENTER = (-3.6, 3.6)             # the storeroom table
 STORE_YAW = 3 * math.pi / 4            # the robot faces it along the diagonal (parks at -3.0, 3.0)
 STORE_WALL_Y, STORE_WALL_X = 2.4, -1.8
 DOOR = (-3.3, -1.8)                    # door opening (x range) in the wall at y = 2.4
-LAYOUT = {"soup can": ("station D", 1)}   # in the home the soup can is kept in the storeroom
+LAYOUT = {"soup can": ("station D", 1),    # in the home the soup can is kept in the storeroom
+          "water bottle": ("station A", 1), "notebook": ("station C", 2), "pen": ("station D", 2)}
+
+# home things that are not in the YCB model set: simple shapes, sized for the Panda gripper (opens 8 cm)
+MADE = ["water bottle", "notebook", "pen"]
+ALIASES = {"water bottle": ["water bottle", "plastic bottle", "small bottle", "bottle"],
+           "notebook": ["notebook", "book", "small book", "blue book"],
+           "pen": ["pen", "marker pen", "marker"]}
 
 TABLE = (0.36, 0.24, 0.15, 1)          # dark walnut: items stand out like on the grey warehouse tables
 SOFA_TABLE = (0.50, 0.36, 0.24, 1)
@@ -107,6 +114,72 @@ def table_color(name, rgba):
 
 
 # ---------- the rooms (visual only) ----------
+def items():
+    """Extra product names in this mode."""
+    return list(MADE) if active() else []
+
+
+def make_item(p, name, x, y, z_table, yaw):
+    """Build one home thing on the table at (x, y). yaw = the station's direction (robot -> table).
+    Sizes: water bottle 5.5 cm wide, 11 cm tall (like the soup can); notebook 7.2 x 10.5 x 2.4 cm (like the
+    gelatin box; a normal book is wider than the open gripper); a thick marker pen 11 cm x 2.4 cm, pointing at
+    the robot so the fingers close across it (a thinner pen sits lower than the fingertips can reach)."""
+    if name == "water bottle":
+        col = p.createCollisionShape(p.GEOM_CYLINDER, radius=0.0275, height=0.11)
+        vis = p.createVisualShape(p.GEOM_CYLINDER, radius=0.0275, length=0.09, rgbaColor=(0.55, 0.80, 0.97, 1),
+                                  visualFramePosition=[0, 0, -0.01])
+        neck = p.createVisualShape(p.GEOM_CYLINDER, radius=0.015, length=0.02, rgbaColor=(0.55, 0.80, 0.97, 1))
+        cap = p.createVisualShape(p.GEOM_CYLINDER, radius=0.016, length=0.012, rgbaColor=(0.10, 0.35, 0.85, 1))
+        label = p.createVisualShape(p.GEOM_CYLINDER, radius=0.0280, length=0.035, rgbaColor=(0.97, 0.97, 0.97, 1))
+        links = [(neck, [0, 0, 0.045]), (cap, [0, 0, 0.059]), (label, [0, 0, -0.01])]
+        body = p.createMultiBody(0.25, col, vis, [x, y, z_table + 0.056],
+                                 linkMasses=[0] * 3, linkCollisionShapeIndices=[-1] * 3,
+                                 linkVisualShapeIndices=[v for v, _ in links],
+                                 linkPositions=[q for _, q in links], linkOrientations=[[0, 0, 0, 1]] * 3,
+                                 linkInertialFramePositions=[[0, 0, 0]] * 3,
+                                 linkInertialFrameOrientations=[[0, 0, 0, 1]] * 3,
+                                 linkParentIndices=[0] * 3, linkJointTypes=[p.JOINT_FIXED] * 3,
+                                 linkJointAxis=[[0, 0, 1]] * 3)
+    elif name == "notebook":
+        half = [0.036, 0.0525, 0.012]
+        col = p.createCollisionShape(p.GEOM_BOX, halfExtents=half)
+        vis = p.createVisualShape(p.GEOM_BOX, halfExtents=half, rgbaColor=(0.12, 0.22, 0.55, 1))
+        pages = p.createVisualShape(p.GEOM_BOX, halfExtents=[0.0345, 0.0515, 0.009], rgbaColor=(0.97, 0.96, 0.90, 1))
+        strip = p.createVisualShape(p.GEOM_BOX, halfExtents=[0.037, 0.008, 0.0125], rgbaColor=(0.95, 0.80, 0.20, 1))
+        links = [(pages, [0.002, 0.0015, 0.0]), (strip, [0, -0.030, 0.0])]
+        # the 7.2 cm side runs sideways (the fingers close sideways), the long side points at the robot
+        orn = p.getQuaternionFromEuler([0, 0, yaw + math.pi / 2])
+        body = p.createMultiBody(0.15, col, vis, [x, y, z_table + 0.013], orn,
+                                 linkMasses=[0] * 2, linkCollisionShapeIndices=[-1] * 2,
+                                 linkVisualShapeIndices=[v for v, _ in links],
+                                 linkPositions=[q for _, q in links], linkOrientations=[[0, 0, 0, 1]] * 2,
+                                 linkInertialFramePositions=[[0, 0, 0]] * 2,
+                                 linkInertialFrameOrientations=[[0, 0, 0, 1]] * 2,
+                                 linkParentIndices=[0] * 2, linkJointTypes=[p.JOINT_FIXED] * 2,
+                                 linkJointAxis=[[0, 0, 1]] * 2)
+    elif name == "pen":
+        col = p.createCollisionShape(p.GEOM_CYLINDER, radius=0.012, height=0.11)
+        vis = p.createVisualShape(p.GEOM_CYLINDER, radius=0.012, length=0.085, rgbaColor=(0.15, 0.30, 0.80, 1),
+                                  visualFramePosition=[0, 0, -0.0125])
+        cap = p.createVisualShape(p.GEOM_CYLINDER, radius=0.0125, length=0.025, rgbaColor=(0.08, 0.08, 0.10, 1))
+        clip = p.createVisualShape(p.GEOM_BOX, halfExtents=[0.002, 0.0015, 0.011], rgbaColor=(0.75, 0.75, 0.78, 1))
+        links = [(cap, [0, 0, 0.0425]), (clip, [0.0135, 0, 0.040])]
+        # lying down, pointing at the robot (its axis along the station direction)
+        orn = p.getQuaternionFromEuler([0, math.pi / 2, yaw])
+        body = p.createMultiBody(0.02, col, vis, [x, y, z_table + 0.0125], orn,
+                                 linkMasses=[0] * 2, linkCollisionShapeIndices=[-1] * 2,
+                                 linkVisualShapeIndices=[v for v, _ in links],
+                                 linkPositions=[q for _, q in links], linkOrientations=[[0, 0, 0, 1]] * 2,
+                                 linkInertialFramePositions=[[0, 0, 0]] * 2,
+                                 linkInertialFrameOrientations=[[0, 0, 0, 1]] * 2,
+                                 linkParentIndices=[0] * 2, linkJointTypes=[p.JOINT_FIXED] * 2,
+                                 linkJointAxis=[[0, 0, 1]] * 2)
+    else:
+        raise ValueError(name)
+    p.changeDynamics(body, -1, lateralFriction=1.0, rollingFriction=0.01, spinningFriction=0.01)
+    return body
+
+
 def _box(p, half, pos, rgba, yaw=0.0, pitch=0.0):
     v = p.createVisualShape(p.GEOM_BOX, halfExtents=half, rgbaColor=rgba)
     return p.createMultiBody(0, -1, v, pos, p.getQuaternionFromEuler([0, pitch, yaw]))

@@ -14,6 +14,7 @@ from throw_skills import THROW_DOC, THROW_METHODS, THROW_TEXT, ThrowAPI, throw_c
 ITEMS = ["banana", "soup can", "mustard bottle", "foam brick", "gelatin box",
          "pear", "strawberry", "scissors", "medium clamp"]      # (the chips can is too wide for the gripper)
 import home
+ITEMS += home.items()            # home mode: water bottle, notebook, pen
 PLACES = home.places()          # station A, B, C (+ D, the storeroom, in home mode)
 TEAM_CONTEXT = (" The drone can scout the stations; the ground robot carries one item at a time. "
                 "Wind may be blowing.")

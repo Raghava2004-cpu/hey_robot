@@ -44,7 +44,8 @@ HARM_VERBS = (r"hit|smash|beat|beat up|punch|kick|slap|stab|kill|hurt|injure|att
               r"poke|whack|bash|harm|squash")
 TARGETS = (r"him|her|them|me|us|you|someone|somebody|anyone|people|person|persons|man|men|woman|women|guy|"
            r"guys|boy|girl|kid|kids|child|children|baby|worker|workers|colleague|boss|manager|operator|"
-           r"human|humans|customer|dog|cat|animal|bird|face|head|his|their|my")
+           r"human|humans|customer|dog|cat|animal|bird|face|head|his|their|my|"
+           r"grandma|grandpa|granny|grandmother|grandfather|grandparents?|elderly|patient|neighbou?r|family")
 DAMAGE = r"(smash|destroy|break|wreck|burn|set fire to|sabotage)\s+(the\s+)?(robot|drone|shelf|shelves|table|window|door|camera|everything|it all)"
 UNSAFE = (r"(turn|switch)\s+off\s+(the\s+)?safety|disable\s+(the\s+)?safety|ignore\s+(the\s+)?safety|"
           r"over (their|people'?s|his|her) heads|\bcarry (me|him|her|them|someone|people|a person)\b")

@@ -24,7 +24,10 @@ ALIASES.update({"pear": ["pear", "green pear", "yellow pear"],
 STORE_LAYOUT = {"gelatin box": ("station A", 0), "strawberry": ("station A", 2),
                 "banana": ("station B", 0), "scissors": ("station B", 0.12),
                 "pear": ("station C", 0), "medium clamp": ("station C", 1), "soup can": ("station C", 2)}
-STORE_ITEMS = list(STORE_LAYOUT)
+import home as _home
+if _home.active():                                    # home mode: water bottle, notebook, pen
+    ALIASES.update(_home.ALIASES)
+STORE_ITEMS = list(STORE_LAYOUT) + _home.items()
 CATEGORIES = {"fruit": ["banana", "pear", "strawberry"],
               "food": ["banana", "pear", "strawberry", "gelatin box", "soup can"],
               "tools": ["scissors", "medium clamp"]}
@@ -84,6 +87,9 @@ def store_scene(wind=(0.8, 0.5), layout=None, shelf_items=(), basket=False):
         env.add_tray("tray", (0.0, -1.45), pk["top"], size=0.3)
         for name, (st, k) in layout.items():
             x, y = _spot(info[st], st, k)
+            if name in home.MADE:                     # home things that are not YCB models
+                env.objects[name] = home.make_item(p, name, x, y, info[st]["top"], env.station_yaws[st])
+                continue
             body = p.loadURDF(os.path.join(YCB, YCB_FILES[name], "model.urdf"), [x, y, info[st]["top"] + 0.06])
             p.changeDynamics(body, -1, rollingFriction=0.01, spinningFriction=0.01)   # round fruit stays put
             if name == "gelatin box":                     # square to the edge, narrow side across the fingers

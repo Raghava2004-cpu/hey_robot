@@ -8,7 +8,8 @@ python command_center.py --text "throw the ball into the bin"     # typed order 
 python command_center.py --manual               # Spark routes the order, a scripted plan acts (fast)
 python command_center.py --loop                 # keep taking orders, one after another
 python command_center.py --faults               # real-world faults on: grasps slip, a worker moves an item
-python command_center.py --home                 # the same robots in a home: kitchen counter, dining table, bed, sofa
+python command_center.py --loop --fast --home              # the home (living room + storeroom, people)
+python command_center.py --loop --fast --home --webcam     # the same, webcam on: show a real object, "bring me one of these"
 """
 import json
 import os
@@ -27,7 +28,7 @@ ARGS = sys.argv[1:]
 MANUAL = "--manual" in ARGS
 FAULTS = "--faults" in ARGS          # real-world faults: slipping grasps, a worker moves an item
 LOOP = "--loop" in ARGS
-SHOW = "--show" in ARGS              # show and tell: hold up a real object to the webcam ("bring me one of these")
+SHOW = "--webcam" in ARGS or "--show" in ARGS   # webcam on: hold up a real object ("bring me one of these")
 if "--home" in ARGS:                 # the same robots and skills in a home (kitchen, dining table, bed, sofa)
     os.environ["HEYROBOT_HOME"] = "1"
 if "--fast" in ARGS:                 # the 3D window runs as fast as it can (no real-time wait)
@@ -52,6 +53,9 @@ SKILLS = {"deliver": "bring one or more items to the packing station and put the
 KEYWORDS = {"banana": "banana", "soup": "soup can", "soap": "soup can", "mustard": "mustard bottle",
             "brick": "foam brick", "gelatin": "gelatin box", "jello": "gelatin box", "pear": "pear",
             "strawberr": "strawberry", "scissor": "scissors", "clamp": "medium clamp"}
+if os.environ.get("HEYROBOT_HOME") == "1":
+    KEYWORDS.update({"water": "water bottle", "bottle": "water bottle", "notebook": "notebook", "book": "notebook",
+                     "pen": "pen", "marker": "pen"})
 ROUTER = f"""You route spoken orders for a warehouse robot team: a drone and a wheeled robot with an arm.
 The text comes from speech recognition and may contain small mistakes (for example "soap can" means
 "soup can", "parking station" means "packing station", and "through the ball" means "throw the ball").

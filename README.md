@@ -136,7 +136,7 @@ station", "Clear station C into the tray". The router sends it to the **new-job*
 ## Show and tell: point at a real object
 
 Hold a **real** object up to the laptop webcam and say *"Bring me one of these."*
-(`python command_center.py --loop --show`). The webcam picture is taken while you speak; **Muse Spark** names
+(`python command_center.py --loop --fast --home --webcam`). The webcam picture is taken while you speak; **Muse Spark** names
 what you hold and picks the matching warehouse product (a real apple → "we don't stock apples, the closest
 product is the pear"); **SAM 3.1** draws its box (`runs/real/show_XX.png`); "these" in the order becomes the
 product, and the order goes through the normal pipeline (SafetyShield → router → robots → checks).
@@ -155,6 +155,14 @@ walk far or reach high just says:
   through the door into the storeroom, picks the can and brings it to the serving tray
 - *"Get the strawberry from the top kitchen shelf and put it on the bedside table."* → drone + robot hand-off
 - *"Clear the dining table and put everything in the serving tray."* → a new job, planned by Spark
+
+Home things the robot can carry (besides the fruit, scissors, clamp and cans): a **water bottle** on the
+kitchen counter, a **notebook** on the bedside table and a **marker pen** in the storeroom. They are simple
+shapes (not YCB models), sized for the Panda gripper, which opens only 8 cm: that is why the book is a small
+notebook (7.2 cm wide) and the pen is a thick marker (2.4 cm). All three pass grip tests with a real two-finger
+grip **[sim mask]**.
+
+![Water bottle, notebook and marker pen](docs/home_items.png)
 
 **Honest note:** the four living-room work spots keep their warehouse names inside (station A = kitchen counter,
 B = dining table, C = bedside table, packing station = sofa table), so every tested move, grasp, camera and
@@ -251,7 +259,7 @@ Every row says which perception it used: **[real]** = real SAM 3.1 + Muse Spark 
 | **Real-camera test** (`real_eye.py --photos`) | **[real]** | 9 phone photos of 6 real objects (apple, soup can, banana, scissors, mug, bottle) in normal / dim / cluttered light; SAM 3.1 also asked for 2 absent objects per photo | SAM 3.1 found **18/18** · Spark named **18/18** right · SAM false alarms **0/18** (every light) |
 | **Sim-to-real vision test** (`vision_bench.py`) | **[real]** | 3 tables × 4 pictures: simulator, and Muse Image's realistic photo / dim light / clutter versions | SAM 3.1 found **28/28** items · Spark named **26/28** right (2 misses: an unlabeled-looking soup can) · **27/28** at the same spot on the table (IoU ≥ 0.5) |
 | **Hand-off on the move** (`relay`) | **[real]** | Robot driving at 0.2 m/s, steady wind | Item dropped **1.4 cm** from the basket center, placed on the station ✅ |
-| **Show and tell** (`--show`, real webcam) | **[real]** | Held up real scissors and said "Bring me this item." | Spark: "scissors" → SAM 3.1 box → order became "Bring me the scissors." → delivered to the tray ✅ first attempt (242 s) |
+| **Show and tell** (`--webcam`, real webcam) | **[real]** | Held up real scissors and said "Bring me this item." | Spark: "scissors" → SAM 3.1 box → order became "Bring me the scissors." → delivered to the tray ✅ first attempt (242 s) |
 | **Voice session** (`command_center.py`) | **[real]** | 4 spoken orders in 2 sessions, incl. a NEW job; Spark-written programs | **4/4** first attempt (table below) |
 | Hand-off sweep | [sim mask] | 4 items × 3 stations | **12/12** delivered, aim 1.3–1.5 cm |
 | **Recovery from faults** (`exp_recovery.py`) | [sim mask] | 20 orders, 30 % slip chance per grasp, item moved after the scan in half the runs, **real two-finger grip** | Checking every step: **16/20** · trusting the first answer: **4/20** (with an item moved: 7/10 vs 0/10). With the older locked grip it was 19/20 vs 3/20: the real grip is harder, and we report it |
@@ -297,22 +305,21 @@ git clone --depth 1 https://github.com/eleramp/pybullet-object-models third_part
 git clone --depth 1 https://github.com/utiasDSL/gym-pybullet-drones third_party/gym-pybullet-drones
 setx MODEL_API_KEY "<your Meta Model API key>"     # then open a new terminal
 
-python command_center.py --loop                    # speak orders (6 s each); the robots act and talk back
-python command_center.py --text "Put the fruit in the tray and the tools on station A."
+python command_center.py --loop --fast --home           # MAIN: speak orders in the home (living room + storeroom)
+python command_center.py --loop --fast --home --webcam  # the same with the webcam on: show a real object
+python command_center.py --loop --fast                  # the same robots and skills in the warehouse
+python command_center.py --home --text "Bring me the water bottle to the sofa."   # typed order, no microphone
 python test_all_skills.py                          # all 9 skills with scripted plans
 python test_all_skills.py relay                    # one skill
 python vision_bench.py                             # sim-to-real test with Muse Image + SAM 3.1 + Spark
 python real_eye.py --photos real_photos            # REAL photos: SAM 3.1 + Spark find and name real objects
-python real_eye.py --webcam                        # live webcam: ask by voice, Spark + SAM answer out loud
-python command_center.py --loop --show             # show and tell: hold up a real object, "bring me one of these"
-python command_center.py --loop --home             # home mode: two rooms (living room + storeroom), people
 python safety_test.py                              # red-team test: 25 harmful + 20 normal orders
 python ask_spark.py --file README.md "question"    # ask Muse Spark about the project
 python -m pytest test_ros2_bridge.py               # ROS 2 bridge in mock mode (no ROS needed)
 ```
 
 Options: `--quiet` (robot does not speak), `--fast` (no real-time wait in the 3D window), `--faults` (hidden slips and moved items),
-`--manual` (scripted plan instead of Spark's program), `--home` (home mode). Set `SKILLFORGE_NO_WINDOW=1` to hide the camera window.
+`--manual` (scripted plan instead of Spark's program), `--home` (home mode), `--webcam` (show and tell). Set `SKILLFORGE_NO_WINDOW=1` to hide the camera window.
 
 ## Files
 
@@ -329,7 +336,7 @@ Options: `--quiet` (robot does not speak), `--fast` (no real-time wait in the 3D
 | `perception.py`, `llm.py`, `imagine.py`, `voice.py` | Thin clients for SAM 3.1, Muse Spark/Wonder, Muse Image, Muse Voice Transcribe |
 | `speech.py` | The robot talks back (Windows built-in voice) |
 | `home.py` | Home mode (`--home`): two rooms, people, the storeroom, and the home names for the same robots and skills |
-| `real_eye.py` | The same SAM 3.1 + Spark pipeline on real phone photos and a live webcam |
+| `real_eye.py` | The same SAM 3.1 + Spark pipeline on real phone photos |
 | `show_tell.py` | Show and tell: a real object held up to the webcam becomes the item in a voice order |
 | `usage_meter.py` | Counts every Meta model call and its time per job |
 | `safety.py`, `safety_test.py` | SafetyShield (Spark intent check + fixed rules + firewall) and its red-team test |
@@ -338,8 +345,8 @@ Options: `--quiet` (robot does not speak), `--fast` (no real-time wait in the 3D
 
 ## Limitations (honest)
 
-- The robots are simulated. The perception pipeline is tested on real phone photos and a live webcam
-  (`real_eye.py`), but no real robot hardware was used.
+- The robots are simulated. The perception pipeline is tested on real phone photos (`real_eye.py`) and a
+  live webcam (show and tell), but no real robot hardware was used.
 - The ROS 2 bridge is tested only in mock mode (no ROS install, no robot).
 - Each SAM/Spark call goes over the internet, so a full voice job takes a few minutes.
 - The drone gripper is limited to light items (≤ 100 g); very wide items (a chips can) do not fit the gripper.

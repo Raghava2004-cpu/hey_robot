@@ -57,6 +57,8 @@ def on_action(action, arg, result):
     set_action(f"{action}({arg}) -> {str(result)[:50]}")
 CATALOG = ["banana", "pear", "strawberry", "scissors", "medium clamp", "soup can", "gelatin box",
            "foam brick", "mustard bottle", "tennis ball"]
+import home as _home
+CATALOG += _home.items()          # home mode: water bottle, notebook, pen
 
 
 def set_action(text):

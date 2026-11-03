@@ -7,7 +7,7 @@
   4. "these / this / it" in your order becomes the product ("Bring me the soup can"), and the order goes
      through the normal pipeline: SafetyShield -> Spark router -> robots -> checks.
 
-Used by:  python command_center.py --loop --show
+Used by:  python command_center.py --loop --home --webcam
 """
 import os
 import re
@@ -16,6 +16,8 @@ import numpy as np
 
 PRODUCTS = ["banana", "pear", "strawberry", "scissors", "medium clamp", "soup can", "gelatin box",
             "foam brick", "mustard bottle"]
+import home as _home
+PRODUCTS += _home.items()         # home mode: water bottle, notebook, pen
 POINTING = re.compile(r"\b((this|that|these|those) (kind|type|sort) of \w+|things like (this|these)|"
                       r"(this|that|these|those) (items?|objects?|things?|products?)|"
                       r"one of these|one of those|some of these|more of these|these ones|those ones|this one|"
@@ -72,7 +74,7 @@ def identify(rgb):
     (Its own prompt: the general vision helper is told it sees a top-down table and may answer 'unknown'.)"""
     from llm import spark
     from perception import _to_data_url
-    q = ("This webcam picture shows a person holding up ONE object to show a warehouse robot what they want. "
+    q = ("This webcam picture shows a person holding up ONE object to show a robot what they want. "
          "Name that object (for example: scissors, banana, soup can, apple, phone, mug). Then choose the most "
          f"similar product from this list: {', '.join(PRODUCTS)}, or none. Never answer 'unknown': if you are not "
          "sure, give your best guess. Reply in exactly this format: "

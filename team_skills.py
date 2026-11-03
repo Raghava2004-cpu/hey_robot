@@ -347,7 +347,8 @@ class TeamAPI:
             self._record("drone_scan", place, f"REFUSED: unknown place. Known: {list(self.env.station_centers)}")
             return []
         items = [str(it) for it in list(items)[:6]]
-        catalog = sorted(set(YCB_FILES) | set(items))          # the warehouse's product list
+        import home
+        catalog = sorted(set(YCB_FILES) | set(items) | set(home.items()))   # the product list
         cx, cy = self.env.station_centers[place]
         yaw = self.env.station_yaws[place]
         # 1) far look: hover 1.1 m in front of the table; any name, may include false sightings
