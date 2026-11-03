@@ -164,8 +164,18 @@ spoken order is translated to the inside names before Muse Spark routes it; what
 labels and the Muse Brain panel use the home names (the panel also shows the mapping). Walls, furniture and
 people are visual only, so they can never block the robot or the drone.
 With the scripted plans, all 9 skills pass in home mode, and 5/5 storeroom jobs pass (fetch from it, put into
-it) **[sim mask]**. With the real models: move to the bedside table, a strawberry to the sofa, and clearing the
-dining table (a new job) all passed on the first attempt **[real]**.
+it) **[sim mask]**. With the real models **[real]**, every home order so far passed on the first attempt (6/6):
+
+| Spoken order (home mode) | What Muse Spark did | Result |
+|---|---|---|
+| "Bring the banana to the bedside table." | move | ✅ 130 s |
+| "I am on the sofa, so bring me strawberry." | deliver to the serving tray | ✅ 111 s |
+| "Clear the dining table and put everything on the serving tray." | **new job**: listed what is really on the table with `sees`, carried each item | ✅ 267 s, judge: DONE |
+| "I am on the sofa. Bring me the soup can from the storeroom." | sent the drone to look in the storeroom first, robot drove through the door | ✅ 92 s |
+| "Grandpa is in bed and has a cold. Bring him something warm to eat on his bedside table." | **no item named**: Spark chose the soup can, fetched it from the storeroom | ✅ 196 s |
+| "(Swap) the soup can in the storeroom with the banana on the dining table, then land the drone on the moving robot." | **new job across two rooms**: parked the banana on the storeroom table, brought the can back, then landed the drone on the moving robot (RL reflex) | ✅ 253 s, judge: "swapped tables (B↔D) and drone landed, all other items stayed" |
+
+In the last order the voice transcript missed the word "swap", and Spark still understood the job.
 
 ## The Muse Brain panel (what the video shows)
 
