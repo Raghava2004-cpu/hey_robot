@@ -6,7 +6,7 @@ and check the result.**
 Meta Global AI Developer Hackathon · Indie track · Problem statement: *Push the Frontier* (robotics) ·
 Vanapalli Raghava Ashok
 
-> 🎥 **Demo video (3 min):** _add link_
+> 🎥 **Demo video (3 min):** https://youtu.be/h-PKskcdwfQ
 
 ![Hey Robot at home: a drone and a robot with an arm, a grandmother on the sofa, a storeroom behind a door](docs/home_mode.png)
 
